@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#bfe8df"/>
+  <path d="M92 170c38-62 91-92 159-92 75 0 132 33 170 98 34 58 31 112-8 163-39 51-93 76-162 76-69 0-124-25-165-76-40-51-38-107 6-169z" fill="#fff6ef"/>
+  <path d="M125 188c34-43 76-65 126-65 58 0 103 24 136 73 27 42 24 80-10 115-34 36-76 54-126 54-51 0-94-18-129-54-35-36-34-77 3-123z" fill="#f7a7b6"/>
+  <circle cx="190" cy="240" r="14" fill="#fff06b"/>
+  <circle cx="248" cy="207" r="12" fill="#82c9ec"/>
+  <circle cx="304" cy="250" r="13" fill="#bfe8df"/>
+  <text x="256" y="312" text-anchor="middle" font-family="Trebuchet MS, Arial, sans-serif" font-size="112" font-weight="900" fill="#2c2524">MP</text>
+</svg>

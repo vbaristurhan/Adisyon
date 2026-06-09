@@ -1,0 +1,19 @@
+{
+  "name": "Macaron Playground Adisyon",
+  "short_name": "Macaron Adisyon",
+  "description": "Macaron Playground masa ve adisyon takip uygulaması.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff6ef",
+  "theme_color": "#bfe8df",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

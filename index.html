@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Macaron Playground Adisyon</title>
+  <meta name="theme-color" content="#bfe8df" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Macaron Adisyon" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icons/icon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Trebuchet MS", "Segoe UI", "system-ui", "sans-serif"]
+          },
+          colors: {
+            cream: "#fff6ef",
+            paper: "#fffdf8",
+            ink: "#2c2524",
+            rose: "#f7a7b6",
+            mint: "#bfe8df",
+            lemon: "#fff06b",
+            sky: "#82c9ec",
+            peach: "#ffe3d4"
+          },
+          boxShadow: {
+            soft: "0 18px 50px rgba(76, 112, 105, .16)"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background:
+        linear-gradient(120deg, rgba(247, 167, 182, .35) 0 14%, transparent 14% 100%),
+        linear-gradient(300deg, rgba(255, 240, 107, .44) 0 12%, transparent 12% 100%),
+        linear-gradient(135deg, #e4fbf6 0%, #c9efe7 42%, #fff7eb 100%);
+    }
+
+    @media print {
+      body { background: #fff; }
+      .no-print { display: none !important; }
+      .print-area { display: block !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-ink">
+  <div id="root"></div>
+  <div id="print-root" class="print-area hidden"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./menuData.js"></script>
+  <script type="text/babel">
+    const { useEffect, useMemo, useState } = React;
+
+    const STORAGE_KEY = "macaron-playground-adisyon-v2";
+    const categoryMap = Object.fromEntries(window.menuCategories.map((category) => [category.id, category]));
+    function uid(prefix) {
+      return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("tr-TR", {
+        style: "currency",
+        currency: "TRY",
+        maximumFractionDigits: 0
+      }).format(value || 0);
+    }
+
+    function dateTime(value) {
+      return new Intl.DateTimeFormat("tr-TR", {
+        dateStyle: "short",
+        timeStyle: "short"
+      }).format(new Date(value));
+    }
+
+    function orderTotal(order) {
+      return order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
+
+    function itemCount(order) {
+      return order.items.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    function readStore() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return {
+          openTables: Array.isArray(saved?.openTables) ? saved.openTables : [],
+          closedTables: Array.isArray(saved?.closedTables) ? saved.closedTables : []
+        };
+      } catch {
+        return { openTables: [], closedTables: [] };
+      }
+    }
+
+    function StatBox({ label, value, tone = "bg-paper" }) {
+      return (
+        <div className={`${tone} rounded-lg border border-black/10 p-4 shadow-sm`}>
+          <div className="text-sm font-bold text-stone-500">{label}</div>
+          <div className="mt-1 text-2xl font-black tracking-normal">{value}</div>
+        </div>
+      );
+    }
+
+    function EmptyState({ title, body }) {
+      return (
+        <div className="rounded-lg border border-dashed border-black/15 bg-white/55 p-6 text-center">
+          <h3 className="text-xl font-black">{title}</h3>
+          <p className="mt-2 text-sm font-bold text-stone-500">{body}</p>
+        </div>
+      );
+    }
+
+    function App() {
+      const initial = useMemo(readStore, []);
+      const [openTables, setOpenTables] = useState(initial.openTables);
+      const [closedTables, setClosedTables] = useState(initial.closedTables);
+      const [screen, setScreen] = useState("home");
+      const [activeTableId, setActiveTableId] = useState(null);
+      const [closingTableId, setClosingTableId] = useState(null);
+      const [selectedClosedId, setSelectedClosedId] = useState(null);
+      const [category, setCategory] = useState("all");
+      const [tableName, setTableName] = useState("");
+
+      const activeTable = openTables.find((table) => table.id === activeTableId);
+      const closingTable = openTables.find((table) => table.id === closingTableId);
+      const selectedClosed = closedTables.find((table) => table.id === selectedClosedId);
+
+      useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ openTables, closedTables }));
+      }, [openTables, closedTables]);
+
+      function goHome() {
+        setScreen("home");
+        setActiveTableId(null);
+        setClosingTableId(null);
+        setSelectedClosedId(null);
+      }
+
+      function createTable(event) {
+        event.preventDefault();
+        const name = tableName.trim();
+        if (!name) return;
+        const table = { id: uid("table"), name, openedAt: new Date().toISOString(), items: [] };
+        setOpenTables((tables) => [table, ...tables]);
+        setTableName("");
+        setActiveTableId(table.id);
+        setScreen("table");
+      }
+
+      function updateActiveTable(updater) {
+        setOpenTables((tables) => tables.map((table) => {
+          if (table.id !== activeTableId) return table;
+          return updater(table);
+        }));
+      }
+
+      function addProduct(product) {
+        updateActiveTable((table) => {
+          const found = table.items.find((item) => item.menuId === product.id);
+          const categoryName = categoryMap[product.categoryId]?.name || "Menü";
+          if (found) {
+            return {
+              ...table,
+              items: table.items.map((item) => item.menuId === product.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item)
+            };
+          }
+          return {
+            ...table,
+            items: [
+              ...table.items,
+              {
+                id: uid("line"),
+                menuId: product.id,
+                name: product.name,
+                categoryId: product.categoryId,
+                categoryName,
+                price: product.price,
+                quantity: 1,
+                note: ""
+              }
+            ]
+          };
+        });
+      }
+
+      function changeQuantity(lineId, delta) {
+        updateActiveTable((table) => ({
+          ...table,
+          items: table.items
+            .map((item) => item.id === lineId ? { ...item, quantity: item.quantity + delta } : item)
+            .filter((item) => item.quantity > 0)
+        }));
+      }
+
+      function removeLine(lineId) {
+        updateActiveTable((table) => ({
+          ...table,
+          items: table.items.filter((item) => item.id !== lineId)
+        }));
+      }
+
+      function changeNote(lineId, note) {
+        updateActiveTable((table) => ({
+          ...table,
+          items: table.items.map((item) => item.id === lineId ? { ...item, note } : item)
+        }));
+      }
+
+      function confirmCloseTable() {
+        if (!closingTable || !closingTable.items.length) return;
+        const closed = {
+          ...closingTable,
+          closedAt: new Date().toISOString(),
+          total: orderTotal(closingTable),
+          soldCount: itemCount(closingTable)
+        };
+        setClosedTables((tables) => [closed, ...tables]);
+        setOpenTables((tables) => tables.filter((table) => table.id !== closingTable.id));
+        setClosingTableId(null);
+        setActiveTableId(null);
+        setScreen("closed");
+      }
+
+      function deleteClosed(id) {
+        if (!confirm("Bu kapanmış adisyon silinsin mi?")) return;
+        setClosedTables((tables) => tables.filter((table) => table.id !== id));
+        if (selectedClosedId === id) setSelectedClosedId(null);
+      }
+
+      function printReceipt(order) {
+        const html = receiptMarkup(order);
+        ReactDOM.createRoot(document.getElementById("print-root")).render(
+          <div dangerouslySetInnerHTML={{ __html: html }} />
+        );
+        setTimeout(() => window.print(), 80);
+      }
+
+      const visibleProducts = window.menuItems.filter((item) => category === "all" || item.categoryId === category);
+      const daySummary = useMemo(() => buildDaySummary(closedTables), [closedTables]);
+
+      return (
+        <main className="no-print mx-auto flex min-h-screen w-full max-w-7xl flex-col px-3 py-4 sm:px-5 lg:px-8">
+          <header className="mb-4 flex flex-col gap-3 rounded-lg border border-white/70 bg-white/45 p-4 shadow-soft backdrop-blur md:flex-row md:items-center md:justify-between">
+            <button type="button" onClick={goHome} className="text-left">
+              <p className="text-sm font-black uppercase tracking-normal text-stone-500">Adisyon</p>
+              <h1 className="text-3xl font-black tracking-normal sm:text-4xl">Macaron Playground</h1>
+            </button>
+            <div className="grid grid-cols-2 gap-2 sm:flex">
+              <TopButton active={screen === "new"} onClick={() => setScreen("new")}>Yeni Masa Aç</TopButton>
+              <TopButton active={screen === "open"} onClick={() => setScreen("open")}>Açık Masalar</TopButton>
+              <TopButton active={screen === "closed"} onClick={() => setScreen("closed")}>Kapanmış Masalar</TopButton>
+              <TopButton active={screen === "summary"} onClick={() => setScreen("summary")}>Gün Sonu</TopButton>
+            </div>
+          </header>
+
+          {screen === "home" && (
+            <section className="grid flex-1 content-start gap-4">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <HomeAction tone="bg-mint" title="Yeni Masa Aç" detail="Yeni bir açık adisyon başlat" onClick={() => setScreen("new")} />
+                <HomeAction tone="bg-rose" title="Açık Masalar" detail={`${openTables.length} açık masa`} onClick={() => setScreen("open")} />
+                <HomeAction tone="bg-sky" title="Kapanmış Masalar" detail={`${closedTables.length} kayıt`} onClick={() => setScreen("closed")} />
+                <HomeAction tone="bg-lemon" title="Gün Sonu Toplamı" detail={money(daySummary.revenue)} onClick={() => setScreen("summary")} />
+              </div>
+              <section className="grid gap-3 md:grid-cols-3">
+                <StatBox label="Açık Masa" value={openTables.length} tone="bg-white/70" />
+                <StatBox label="Bugünkü Ciro" value={money(daySummary.revenue)} tone="bg-white/70" />
+                <StatBox label="Satılan Ürün" value={daySummary.soldCount} tone="bg-white/70" />
+              </section>
+            </section>
+          )}
+
+          {screen === "new" && (
+            <section className="mx-auto grid w-full max-w-xl gap-4 rounded-lg border border-white/70 bg-paper/90 p-5 shadow-soft">
+              <h2 className="text-2xl font-black">Yeni Masa Aç</h2>
+              <form onSubmit={createTable} className="grid gap-3">
+                <label className="grid gap-2 text-sm font-black text-stone-600">
+                  Masa adı
+                  <input
+                    value={tableName}
+                    onChange={(event) => setTableName(event.target.value)}
+                    autoFocus
+                    className="h-14 rounded-lg border border-black/10 bg-white px-4 text-xl font-black outline-none focus:ring-4 focus:ring-rose/35"
+                    placeholder="Örn. Bahçe 4"
+                  />
+                </label>
+                <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Masa Oluştur</button>
+              </form>
+            </section>
+          )}
+
+          {screen === "open" && (
+            <TableList
+              tables={openTables}
+              onOpen={(id) => { setActiveTableId(id); setScreen("table"); }}
+              onClose={(id) => { setActiveTableId(id); setClosingTableId(id); setScreen("close"); }}
+            />
+          )}
+
+          {screen === "table" && activeTable && (
+            <ActiveTable
+              table={activeTable}
+              category={category}
+              setCategory={setCategory}
+              products={visibleProducts}
+              addProduct={addProduct}
+              changeQuantity={changeQuantity}
+              removeLine={removeLine}
+              changeNote={changeNote}
+              closeTable={() => { setClosingTableId(activeTable.id); setScreen("close"); }}
+            />
+          )}
+
+          {screen === "close" && closingTable && (
+            <ClosePreview table={closingTable} onCancel={() => setScreen("table")} onConfirm={confirmCloseTable} />
+          )}
+
+          {screen === "closed" && (
+            <ClosedTables
+              tables={closedTables}
+              selected={selectedClosed}
+              select={setSelectedClosedId}
+              onPrint={printReceipt}
+              onDelete={deleteClosed}
+            />
+          )}
+
+          {screen === "summary" && <DaySummary summary={daySummary} />}
+        </main>
+      );
+    }
+
+    function TopButton({ active, children, onClick }) {
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          className={`min-h-12 rounded-lg border px-4 py-2 text-sm font-black shadow-sm transition ${active ? "border-ink bg-ink text-white" : "border-black/10 bg-white/75 text-ink"}`}
+        >
+          {children}
+        </button>
+      );
+    }
+
+    function HomeAction({ tone, title, detail, onClick }) {
+      return (
+        <button type="button" onClick={onClick} className={`${tone} min-h-36 rounded-lg border border-white/70 p-5 text-left shadow-soft transition hover:-translate-y-0.5`}>
+          <span className="block text-2xl font-black">{title}</span>
+          <span className="mt-3 block text-base font-bold text-stone-700">{detail}</span>
+        </button>
+      );
+    }
+
+    function TableList({ tables, onOpen, onClose }) {
+      if (!tables.length) {
+        return <EmptyState title="Açık masa yok" body="Yeni Masa Aç ekranından ilk adisyonu başlatabilirsiniz." />;
+      }
+
+      return (
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {tables.map((table) => (
+            <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-2xl font-black">{table.name}</h2>
+                  <p className="mt-1 text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
+                </div>
+                <strong className="rounded-full bg-lemon px-3 py-1 text-sm">{money(orderTotal(table))}</strong>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <button onClick={() => onOpen(table.id)} className="h-12 rounded-lg bg-mint font-black">Aç</button>
+                <button onClick={() => onClose(table.id)} disabled={!table.items.length} className="h-12 rounded-lg bg-rose font-black disabled:cursor-not-allowed disabled:opacity-45">Kapat</button>
+              </div>
+            </article>
+          ))}
+        </section>
+      );
+    }
+
+    function ActiveTable({ table, category, setCategory, products, addProduct, changeQuantity, removeLine, changeNote, closeTable }) {
+      return (
+        <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="grid content-start gap-3">
+            <div className="sticky top-0 z-10 -mx-3 bg-mint/70 px-3 py-2 backdrop-blur sm:mx-0 sm:rounded-lg">
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {window.menuCategories.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setCategory(item.id)}
+                    className={`h-12 shrink-0 rounded-full border px-4 text-sm font-black ${category === item.id ? "border-ink bg-lemon" : "border-black/10 bg-white/75"}`}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="grid gap-2">
+              {products.map((product) => (
+                <button key={product.id} onClick={() => addProduct(product)} className="min-h-16 rounded-lg border border-black/10 bg-paper px-4 py-3 text-left shadow-sm transition active:scale-[.99]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="text-base font-black leading-tight sm:text-lg">{product.name}</h3>
+                      <span className="mt-1 block text-xs font-bold text-stone-500">{categoryMap[product.categoryId]?.name}</span>
+                    </div>
+                    <strong className="shrink-0 rounded-full bg-lemon px-3 py-2 text-base font-black">{money(product.price)}</strong>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <aside className="grid content-start gap-3 rounded-lg border border-black/10 bg-white/75 p-3 shadow-soft lg:sticky lg:top-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-2xl font-black">{table.name}</h2>
+                <p className="text-sm font-bold text-stone-500">{itemCount(table)} ürün</p>
+              </div>
+              <strong className="rounded-full bg-lemon px-3 py-2 text-lg">{money(orderTotal(table))}</strong>
+            </div>
+
+            {!table.items.length && <EmptyState title="Adisyon boş" body="Menüden ürüne basarak ekleyin." />}
+
+            <div className="grid gap-2">
+              {table.items.map((line) => (
+                <article key={line.id} className="rounded-lg border border-black/10 bg-paper p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="font-black leading-tight">{line.name}</h3>
+                      <p className="text-sm font-bold text-stone-500">{money(line.price)} x {line.quantity}</p>
+                    </div>
+                    <strong>{money(line.price * line.quantity)}</strong>
+                  </div>
+                  <div className="mt-3 grid grid-cols-[48px_48px_48px_1fr] gap-2">
+                    <button onClick={() => changeQuantity(line.id, -1)} className="h-12 rounded-lg bg-mint text-2xl font-black">-</button>
+                    <div className="grid h-12 place-items-center rounded-lg bg-white font-black">{line.quantity}</div>
+                    <button onClick={() => changeQuantity(line.id, 1)} className="h-12 rounded-lg bg-mint text-2xl font-black">+</button>
+                    <button onClick={() => removeLine(line.id)} className="h-12 rounded-lg bg-rose font-black">Sil</button>
+                  </div>
+                  <input
+                    value={line.note}
+                    onChange={(event) => changeNote(line.id, event.target.value)}
+                    className="mt-2 h-11 w-full rounded-lg border border-black/10 bg-white px-3 font-bold outline-none focus:ring-4 focus:ring-sky/35"
+                    placeholder="Ürün notu"
+                  />
+                </article>
+              ))}
+            </div>
+
+            <button onClick={closeTable} disabled={!table.items.length} className="h-14 rounded-lg bg-ink text-lg font-black text-white disabled:cursor-not-allowed disabled:opacity-45">Masayı Kapat</button>
+          </aside>
+        </section>
+      );
+    }
+
+    function ClosePreview({ table, onCancel, onConfirm }) {
+      return (
+        <section className="mx-auto grid w-full max-w-3xl gap-4 rounded-lg border border-black/10 bg-paper/95 p-4 shadow-soft">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-black">Masayı Kapat: {table.name}</h2>
+              <p className="text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
+            </div>
+            <strong className="text-3xl font-black">{money(orderTotal(table))}</strong>
+          </div>
+          <ReceiptTable order={table} />
+          <div className="grid gap-2 sm:grid-cols-2">
+            <button onClick={onCancel} className="h-14 rounded-lg bg-white font-black">Geri Dön</button>
+            <button onClick={onConfirm} className="h-14 rounded-lg bg-ink font-black text-white">Onayla ve Kapat</button>
+          </div>
+        </section>
+      );
+    }
+
+    function ClosedTables({ tables, selected, select, onPrint, onDelete }) {
+      return (
+        <section className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+          <div className="grid content-start gap-2">
+            {!tables.length && <EmptyState title="Kapanmış masa yok" body="Kapatılan adisyonlar burada listelenir." />}
+            {tables.map((table) => (
+              <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-3 shadow-sm">
+                <button onClick={() => select(table.id)} className="w-full text-left">
+                  <h2 className="text-xl font-black">{table.name}</h2>
+                  <p className="text-sm font-bold text-stone-500">{dateTime(table.closedAt)}</p>
+                  <strong className="mt-2 block text-lg">{money(table.total)}</strong>
+                </button>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button onClick={() => onPrint(table)} className="h-11 rounded-lg bg-mint font-black">Fiş</button>
+                  <button onClick={() => onDelete(table.id)} className="h-11 rounded-lg bg-rose font-black">Sil</button>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="rounded-lg border border-black/10 bg-white/75 p-4 shadow-soft">
+            {selected ? (
+              <div className="grid gap-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h2 className="text-2xl font-black">{selected.name}</h2>
+                    <p className="text-sm font-bold text-stone-500">Kapanış: {dateTime(selected.closedAt)}</p>
+                  </div>
+                  <strong className="text-3xl font-black">{money(selected.total)}</strong>
+                </div>
+                <ReceiptTable order={selected} />
+                <button onClick={() => onPrint(selected)} className="h-14 rounded-lg bg-ink text-lg font-black text-white">Fiş Çıktısı Al</button>
+              </div>
+            ) : (
+              <EmptyState title="Detay seçilmedi" body="Soldaki kapanmış adisyonlardan birini açın." />
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    function ReceiptTable({ order }) {
+      return (
+        <div className="overflow-x-auto rounded-lg border border-black/10 bg-white">
+          <table className="w-full min-w-[560px] text-left">
+            <thead className="bg-mint/60 text-sm">
+              <tr>
+                <th className="p-3">Ürün</th>
+                <th className="p-3 text-right">Adet</th>
+                <th className="p-3 text-right">Birim Fiyat</th>
+                <th className="p-3 text-right">Ara Toplam</th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.items.map((item) => (
+                <tr key={item.id} className="border-t border-black/10">
+                  <td className="p-3">
+                    <strong>{item.name}</strong>
+                    {item.note && <div className="text-xs font-bold text-stone-500">Not: {item.note}</div>}
+                  </td>
+                  <td className="p-3 text-right font-bold">{item.quantity}</td>
+                  <td className="p-3 text-right font-bold">{money(item.price)}</td>
+                  <td className="p-3 text-right font-black">{money(item.price * item.quantity)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-black/20 bg-lemon/70">
+                <td className="p-3 text-xl font-black" colSpan="3">Genel Toplam</td>
+                <td className="p-3 text-right text-xl font-black">{money(orderTotal(order))}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      );
+    }
+
+    function DaySummary({ summary }) {
+      return (
+        <section className="grid gap-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StatBox label="Toplam Ciro" value={money(summary.revenue)} tone="bg-lemon" />
+            <StatBox label="Satılan Ürün" value={summary.soldCount} tone="bg-mint" />
+            <StatBox label="En Çok Satan Ürün" value={summary.topProduct || "-"} tone="bg-rose" />
+            <StatBox label="En Çok Satan Kategori" value={summary.topCategory || "-"} tone="bg-sky" />
+          </div>
+          <div className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
+            <h2 className="text-2xl font-black">Gün Sonu Toplamı</h2>
+            <p className="mt-2 text-sm font-bold text-stone-500">Hesaplama kapanmış masalardan yapılır.</p>
+          </div>
+        </section>
+      );
+    }
+
+    function buildDaySummary(closedTables) {
+      const products = {};
+      const categories = {};
+      let revenue = 0;
+      let soldCount = 0;
+
+      closedTables.forEach((table) => {
+        revenue += table.total || orderTotal(table);
+        table.items.forEach((item) => {
+          soldCount += item.quantity;
+          products[item.menuId] = products[item.menuId] || { name: item.name, quantity: 0 };
+          products[item.menuId].quantity += item.quantity;
+          categories[item.categoryId] = categories[item.categoryId] || { name: item.categoryName, quantity: 0 };
+          categories[item.categoryId].quantity += item.quantity;
+        });
+      });
+
+      const topProduct = Object.values(products).sort((a, b) => b.quantity - a.quantity)[0];
+      const topCategory = Object.values(categories).sort((a, b) => b.quantity - a.quantity)[0];
+
+      return {
+        revenue,
+        soldCount,
+        topProduct: topProduct ? `${topProduct.name} (${topProduct.quantity})` : "",
+        topCategory: topCategory ? `${topCategory.name} (${topCategory.quantity})` : ""
+      };
+    }
+
+    function receiptMarkup(order) {
+      const rows = order.items.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.name)}${item.note ? `<small>Not: ${escapeHtml(item.note)}</small>` : ""}</td>
+          <td>${item.quantity}</td>
+          <td>${money(item.price)}</td>
+          <td>${money(item.price * item.quantity)}</td>
+        </tr>
+      `).join("");
+
+      return `
+        <style>
+          .receipt { width: 80mm; margin: 0 auto; color: #111; font-family: Arial, sans-serif; }
+          .receipt h1 { margin: 0 0 4mm; font-size: 18px; text-align: center; }
+          .receipt p { margin: 0 0 2mm; font-size: 12px; }
+          .receipt table { width: 100%; border-collapse: collapse; font-size: 11px; }
+          .receipt th, .receipt td { border-bottom: 1px solid #ddd; padding: 5px 2px; text-align: right; vertical-align: top; }
+          .receipt th:first-child, .receipt td:first-child { text-align: left; }
+          .receipt small { display: block; color: #555; margin-top: 2px; }
+          .receipt .total { font-size: 16px; font-weight: 800; text-align: right; margin-top: 4mm; }
+        </style>
+        <section class="receipt">
+          <h1>Macaron Playground</h1>
+          <p><strong>Masa:</strong> ${escapeHtml(order.name)}</p>
+          <p><strong>Açılış:</strong> ${dateTime(order.openedAt)}</p>
+          <p><strong>Kapanış:</strong> ${dateTime(order.closedAt || new Date().toISOString())}</p>
+          <table>
+            <thead><tr><th>Ürün</th><th>Adet</th><th>Birim</th><th>Toplam</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+          <div class="total">Genel Toplam: ${money(orderTotal(order))}</div>
+        </section>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
