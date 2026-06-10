@@ -1,660 +1,1031 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Macaron Playground Adisyon</title>
-  <meta name="theme-color" content="#bfe8df" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Macaron Adisyon" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="./icons/icon.svg" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ["Trebuchet MS", "Segoe UI", "system-ui", "sans-serif"]
-          },
-          colors: {
-            cream: "#fff6ef",
-            paper: "#fffdf8",
-            ink: "#2c2524",
-            rose: "#f7a7b6",
-            mint: "#bfe8df",
-            lemon: "#fff06b",
-            sky: "#82c9ec",
-            peach: "#ffe3d4"
-          },
-          boxShadow: {
-            soft: "0 18px 50px rgba(76, 112, 105, .16)"
-          }
-        }
-      }
-    };
-  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>macaronplayground QR Menu</title>
   <style>
+    :root {
+      color-scheme: light;
+      --cream: #fff6ef;
+      --paper: #fffdf8;
+      --ink: #2c2524;
+      --muted: #746763;
+      --pink: #f7a7b6;
+      --mint: #bfe8df;
+      --lemon: #fff06b;
+      --blue: #82c9ec;
+      --peach: #ffe3d4;
+      --line: rgba(58, 79, 75, .16);
+      --shadow: 0 20px 60px rgba(76, 112, 105, .16);
+      --radius: 8px;
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
       background:
-        linear-gradient(120deg, rgba(247, 167, 182, .35) 0 14%, transparent 14% 100%),
-        linear-gradient(300deg, rgba(255, 240, 107, .44) 0 12%, transparent 12% 100%),
+        linear-gradient(120deg, rgba(247, 167, 182, .42) 0 14%, transparent 14% 100%),
+        linear-gradient(300deg, rgba(255, 240, 107, .5) 0 11%, transparent 11% 100%),
         linear-gradient(135deg, #e4fbf6 0%, #c9efe7 42%, #fff7eb 100%);
     }
 
-    @media print {
-      body { background: #fff; }
-      .no-print { display: none !important; }
-      .print-area { display: block !important; }
+    body.welcome-open {
+      overflow: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 22px clamp(14px, 4vw, 34px) 42px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      padding: 8px 0 18px;
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand-logo {
+      display: block;
+      width: clamp(178px, 34vw, 300px);
+      height: auto;
+      border-radius: var(--radius);
+      filter: drop-shadow(0 12px 18px rgba(70, 100, 94, .18));
+    }
+
+    .lang {
+      display: inline-grid;
+      grid-template-columns: repeat(2, 1fr);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .55);
+      border-radius: 999px;
+      padding: 4px;
+      flex: 0 0 auto;
+    }
+
+    .lang button {
+      min-width: 48px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 12px;
+      font-weight: 800;
+    }
+
+    .lang button[aria-pressed="true"] {
+      background: #77c6e9;
+      color: #17292d;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(280px, 1.1fr);
+      align-items: stretch;
+      gap: 18px;
+      min-height: 280px;
+      margin-bottom: 18px;
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(16px, 4vw, 28px) 0;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 11ch;
+      font-size: clamp(42px, 10vw, 86px);
+      line-height: .9;
+      letter-spacing: 0;
+      color: #3b312e;
+      text-transform: uppercase;
+      text-shadow: 0 10px 20px rgba(255, 255, 255, .62), 0 2px 0 rgba(255, 240, 107, .38);
+    }
+
+    .lead {
+      max-width: 48ch;
+      margin: 18px 0 0;
+      color: transparent;
+      background: linear-gradient(90deg, #5aa99c, #df8394, #c7ad22, #55a8cf);
+      -webkit-background-clip: text;
+      background-clip: text;
+      font-size: clamp(16px, 2.4vw, 20px);
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .hero-media {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      min-height: 260px;
+      background:
+        linear-gradient(120deg, rgba(247, 167, 182, .7) 0 16%, transparent 16% 100%),
+        linear-gradient(300deg, rgba(255, 240, 107, .75) 0 18%, transparent 18% 100%),
+        linear-gradient(135deg, #d5f6f0, #fff8ef);
+      box-shadow: var(--shadow);
+      padding: clamp(14px, 4vw, 30px);
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 18px 22px rgba(46, 68, 65, .16));
+    }
+
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255, 255, 255, .56);
+      pointer-events: none;
+    }
+
+    .controls {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      gap: 12px;
+      padding: 10px 0 14px;
+      background: linear-gradient(180deg, rgba(228, 251, 246, .98), rgba(228, 251, 246, .9) 70%, transparent);
+      backdrop-filter: blur(12px);
+    }
+
+    .search {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      align-items: center;
+      gap: 8px;
+      height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 16px;
+      background: rgba(255, 255, 255, .76);
+    }
+
+    .search input {
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 16px;
+    }
+
+    .search svg {
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tabs button {
+      flex: 0 0 auto;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .65);
+      color: #524641;
+      padding: 10px 14px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .tabs button[aria-selected="true"] {
+      background: var(--lemon);
+      color: #2c2524;
+      border-color: rgba(44, 37, 36, .18);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 22px 0 12px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: clamp(24px, 5vw, 38px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      overflow: hidden;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .9);
+      box-shadow: 0 12px 30px rgba(76, 112, 105, .11);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .card:hover,
+    .card:focus-within {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(76, 112, 105, .16);
+    }
+
+    .product-button {
+      display: block;
+      width: 100%;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+    }
+
+    .product-art {
+      position: relative;
+      display: grid;
+      place-items: center;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: var(--tile, linear-gradient(135deg, var(--pink), var(--mint)));
+    }
+
+    .product-art::before {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 255, 255, .58);
+    }
+
+    .product-art b {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: min(92px, 38%);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .66);
+      color: rgba(44, 37, 36, .82);
+      font-size: clamp(30px, 6vw, 46px);
+      box-shadow: inset 0 -8px 0 rgba(44, 37, 36, .06);
+    }
+
+    .product-art.has-photo {
+      background: #fff;
+    }
+
+    .product-art.has-photo::before {
+      display: none;
+    }
+
+    .product-art img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-body {
+      display: grid;
+      gap: 8px;
+      min-height: 118px;
+      padding: 12px;
+    }
+
+    .product-title {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .price {
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .note {
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      padding: 18px;
+      background: rgba(44, 37, 36, .36);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal[open] {
+      display: grid;
+      place-items: center;
+    }
+
+    .dialog {
+      width: min(820px, 100%);
+      max-height: min(780px, calc(100vh - 36px));
+      overflow: auto;
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 30px 80px rgba(44, 37, 36, .28);
+    }
+
+    .dialog-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, .85fr) minmax(0, 1fr);
+    }
+
+    .dialog .product-art {
+      height: 100%;
+      min-height: 320px;
+      aspect-ratio: auto;
+    }
+
+    .dialog-content {
+      padding: clamp(18px, 4vw, 30px);
+    }
+
+    .dialog-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .dialog h3 {
+      margin: 0;
+      font-size: clamp(28px, 6vw, 44px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .close {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .close svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .dialog-price {
+      margin: 16px 0;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .dialog p {
+      color: #5d504b;
+      line-height: 1.6;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      background: rgba(189, 217, 209, .48);
+      color: #3e5852;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .welcome {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      display: grid;
+      place-items: center;
+      padding: clamp(14px, 4vw, 30px);
+      background: rgba(48, 42, 39, .34);
+      backdrop-filter: blur(14px);
+    }
+
+    .welcome[hidden] {
+      display: none;
+    }
+
+    .welcome-card {
+      position: relative;
+      overflow: hidden;
+      width: min(520px, 100%);
+      border: 1px solid rgba(255, 255, 255, .74);
+      border-radius: 18px;
+      background:
+        linear-gradient(130deg, rgba(247, 167, 182, .28) 0 22%, transparent 22% 100%),
+        linear-gradient(310deg, rgba(191, 232, 223, .44) 0 28%, transparent 28% 100%),
+        linear-gradient(180deg, #fffbf4, #fff1e7);
+      box-shadow: 0 30px 90px rgba(62, 76, 72, .28);
+      text-align: center;
+    }
+
+    .welcome-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(70, 92, 87, .16);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .82);
+      color: #463b37;
+      box-shadow: 0 8px 18px rgba(76, 112, 105, .14);
+    }
+
+    .welcome-close svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .welcome-visual {
+      position: relative;
+      display: grid;
+      place-items: end center;
+      min-height: clamp(250px, 48vh, 390px);
+      padding: 26px 20px 0;
+      background:
+        var(--welcome-bg, linear-gradient(135deg, rgba(191, 232, 223, .68), rgba(255, 246, 239, .92))),
+        radial-gradient(circle at 18% 16%, rgba(247, 167, 182, .42), transparent 40%),
+        radial-gradient(circle at 84% 12%, rgba(255, 240, 107, .35), transparent 34%);
+    }
+
+    .welcome-visual::after {
+      content: "";
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: -18px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(111, 139, 132, .16);
+      filter: blur(12px);
+    }
+
+    .welcome-mascot {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: min(86%, 360px);
+      max-height: 360px;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 24px rgba(64, 88, 84, .22));
+    }
+
+    .welcome-content {
+      position: relative;
+      z-index: 1;
+      padding: 28px clamp(20px, 6vw, 42px) 34px;
+    }
+
+    .welcome-title {
+      margin: 0;
+      color: #3b312e;
+      font-size: clamp(28px, 7vw, 42px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .welcome-title span {
+      color: transparent;
+      background: linear-gradient(90deg, #6bbfb3, #f19aaa, #d6bd31, #70bfe2);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .welcome-action-box {
+      margin-top: 22px;
+      padding: 8px;
+      border: 1px solid rgba(70, 92, 87, .12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .74);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 12px 28px rgba(76, 112, 105, .12);
+    }
+
+    .welcome-enter {
+      width: 100%;
+      min-height: 54px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #bfe8df, #f7a7b6 42%, #fff06b);
+      color: #2c2524;
+      font-size: 18px;
+      font-weight: 900;
+      box-shadow: 0 12px 22px rgba(247, 167, 182, .28);
+    }
+
+    @media (max-width: 920px) {
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: 0;
+      }
+
+      .hero-copy {
+        padding-bottom: 0;
+      }
+
+      h1 {
+        max-width: 9ch;
+      }
+
+      .hero-media {
+        min-height: 210px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dialog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dialog .product-art {
+        min-height: 230px;
+      }
+
+      .welcome-card {
+        border-radius: 14px;
+      }
+
+      .welcome-visual {
+        min-height: 240px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .app {
+        padding-inline: 12px;
+      }
+
+      .lang button {
+        min-width: 42px;
+        padding-inline: 9px;
+      }
+
+      .grid {
+        gap: 10px;
+      }
+
+      .product-body {
+        min-height: 126px;
+        padding: 10px;
+      }
+
+      .product-title {
+        font-size: 14px;
+      }
+
+      .price {
+        font-size: 15px;
+      }
     }
   </style>
 </head>
-<body class="min-h-screen text-ink">
-  <div id="root"></div>
-  <div id="print-root" class="print-area hidden"></div>
+<body>
+  <main class="app">
+    <header class="topbar" aria-label="macaronplayground">
+      <nav class="lang" aria-label="Language">
+        <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </nav>
+    </header>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="./menuData.js"></script>
-  <script type="text/babel">
-    const { useEffect, useMemo, useState } = React;
+    <section class="hero">
+      <div class="hero-copy">
+        <h1 data-i18n="heroTitle">Menü</h1>
+        <p class="lead" data-i18n="heroLead">Macaron dünyasında kahvaltı, tatlı, kahve ve atıştırmalıklar.</p>
+      </div>
+      <div class="hero-media" aria-hidden="true">
+        <img src="assets/macaron-logo.png" alt="">
+      </div>
+    </section>
 
-    const STORAGE_KEY = "macaron-playground-adisyon-v2";
-    const categoryMap = Object.fromEntries(window.menuCategories.map((category) => [category.id, category]));
-    function uid(prefix) {
-      return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    }
+    <section class="controls" aria-label="Menu controls">
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <input id="search" type="search" autocomplete="off">
+      </label>
+      <div class="tabs" id="tabs" role="tablist"></div>
+    </section>
 
-    function money(value) {
-      return new Intl.NumberFormat("tr-TR", {
-        style: "currency",
-        currency: "TRY",
-        maximumFractionDigits: 0
-      }).format(value || 0);
-    }
+    <section class="section-title" aria-live="polite">
+      <h2 id="categoryTitle">Tümü</h2>
+      <p id="countText"></p>
+    </section>
 
-    function dateTime(value) {
-      return new Intl.DateTimeFormat("tr-TR", {
-        dateStyle: "short",
-        timeStyle: "short"
-      }).format(new Date(value));
-    }
+    <section class="grid" id="productGrid" aria-label="Menu items"></section>
+  </main>
 
-    function orderTotal(order) {
-      return order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    }
-
-    function itemCount(order) {
-      return order.items.reduce((sum, item) => sum + item.quantity, 0);
-    }
-
-    function readStore() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        return {
-          openTables: Array.isArray(saved?.openTables) ? saved.openTables : [],
-          closedTables: Array.isArray(saved?.closedTables) ? saved.closedTables : []
-        };
-      } catch {
-        return { openTables: [], closedTables: [] };
-      }
-    }
-
-    function StatBox({ label, value, tone = "bg-paper" }) {
-      return (
-        <div className={`${tone} rounded-lg border border-black/10 p-4 shadow-sm`}>
-          <div className="text-sm font-bold text-stone-500">{label}</div>
-          <div className="mt-1 text-2xl font-black tracking-normal">{value}</div>
+  <section class="welcome" id="welcomePopup" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <article class="welcome-card" style="--welcome-bg: linear-gradient(135deg, rgba(191, 232, 223, .72), rgba(255, 246, 239, .94));">
+      <button class="welcome-close" type="button" id="welcomeClose" aria-label="Kapat">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+      <div class="welcome-visual">
+        <img class="welcome-mascot" src="assets/welcome-mascot.png" alt="Macaron Playground maskotu">
+      </div>
+      <div class="welcome-content">
+        <h2 class="welcome-title" id="welcomeTitle"><span>Macaron Playground'a</span> Hoş Geldiniz</h2>
+        <div class="welcome-action-box">
+          <button class="welcome-enter" type="button" id="welcomeEnter">Menüye Bak</button>
         </div>
-      );
-    }
+      </div>
+    </article>
+  </section>
 
-    function EmptyState({ title, body }) {
-      return (
-        <div className="rounded-lg border border-dashed border-black/15 bg-white/55 p-6 text-center">
-          <h3 className="text-xl font-black">{title}</h3>
-          <p className="mt-2 text-sm font-bold text-stone-500">{body}</p>
-        </div>
-      );
-    }
-
-    function App() {
-      const initial = useMemo(readStore, []);
-      const [openTables, setOpenTables] = useState(initial.openTables);
-      const [closedTables, setClosedTables] = useState(initial.closedTables);
-      const [screen, setScreen] = useState("home");
-      const [activeTableId, setActiveTableId] = useState(null);
-      const [closingTableId, setClosingTableId] = useState(null);
-      const [selectedClosedId, setSelectedClosedId] = useState(null);
-      const [category, setCategory] = useState("all");
-      const [tableName, setTableName] = useState("");
-
-      const activeTable = openTables.find((table) => table.id === activeTableId);
-      const closingTable = openTables.find((table) => table.id === closingTableId);
-      const selectedClosed = closedTables.find((table) => table.id === selectedClosedId);
-
-      useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ openTables, closedTables }));
-      }, [openTables, closedTables]);
-
-      function goHome() {
-        setScreen("home");
-        setActiveTableId(null);
-        setClosingTableId(null);
-        setSelectedClosedId(null);
-      }
-
-      function createTable(event) {
-        event.preventDefault();
-        const name = tableName.trim();
-        if (!name) return;
-        const table = { id: uid("table"), name, openedAt: new Date().toISOString(), items: [] };
-        setOpenTables((tables) => [table, ...tables]);
-        setTableName("");
-        setActiveTableId(table.id);
-        setScreen("table");
-      }
-
-      function updateActiveTable(updater) {
-        setOpenTables((tables) => tables.map((table) => {
-          if (table.id !== activeTableId) return table;
-          return updater(table);
-        }));
-      }
-
-      function addProduct(product) {
-        updateActiveTable((table) => {
-          const found = table.items.find((item) => item.menuId === product.id);
-          const categoryName = categoryMap[product.categoryId]?.name || "Menü";
-          if (found) {
-            return {
-              ...table,
-              items: table.items.map((item) => item.menuId === product.id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item)
-            };
-          }
-          return {
-            ...table,
-            items: [
-              ...table.items,
-              {
-                id: uid("line"),
-                menuId: product.id,
-                name: product.name,
-                categoryId: product.categoryId,
-                categoryName,
-                price: product.price,
-                quantity: 1,
-                note: ""
-              }
-            ]
-          };
-        });
-      }
-
-      function changeQuantity(lineId, delta) {
-        updateActiveTable((table) => ({
-          ...table,
-          items: table.items
-            .map((item) => item.id === lineId ? { ...item, quantity: item.quantity + delta } : item)
-            .filter((item) => item.quantity > 0)
-        }));
-      }
-
-      function removeLine(lineId) {
-        updateActiveTable((table) => ({
-          ...table,
-          items: table.items.filter((item) => item.id !== lineId)
-        }));
-      }
-
-      function changeNote(lineId, note) {
-        updateActiveTable((table) => ({
-          ...table,
-          items: table.items.map((item) => item.id === lineId ? { ...item, note } : item)
-        }));
-      }
-
-      function confirmCloseTable() {
-        if (!closingTable || !closingTable.items.length) return;
-        const closed = {
-          ...closingTable,
-          closedAt: new Date().toISOString(),
-          total: orderTotal(closingTable),
-          soldCount: itemCount(closingTable)
-        };
-        setClosedTables((tables) => [closed, ...tables]);
-        setOpenTables((tables) => tables.filter((table) => table.id !== closingTable.id));
-        setClosingTableId(null);
-        setActiveTableId(null);
-        setScreen("closed");
-      }
-
-      function deleteClosed(id) {
-        if (!confirm("Bu kapanmış adisyon silinsin mi?")) return;
-        setClosedTables((tables) => tables.filter((table) => table.id !== id));
-        if (selectedClosedId === id) setSelectedClosedId(null);
-      }
-
-      function printReceipt(order) {
-        const html = receiptMarkup(order);
-        ReactDOM.createRoot(document.getElementById("print-root")).render(
-          <div dangerouslySetInnerHTML={{ __html: html }} />
-        );
-        setTimeout(() => window.print(), 80);
-      }
-
-      const visibleProducts = window.menuItems.filter((item) => category === "all" || item.categoryId === category);
-      const daySummary = useMemo(() => buildDaySummary(closedTables), [closedTables]);
-
-      return (
-        <main className="no-print mx-auto flex min-h-screen w-full max-w-7xl flex-col px-3 py-4 sm:px-5 lg:px-8">
-          <header className="mb-4 flex flex-col gap-3 rounded-lg border border-white/70 bg-white/45 p-4 shadow-soft backdrop-blur md:flex-row md:items-center md:justify-between">
-            <button type="button" onClick={goHome} className="text-left">
-              <p className="text-sm font-black uppercase tracking-normal text-stone-500">Adisyon</p>
-              <h1 className="text-3xl font-black tracking-normal sm:text-4xl">Macaron Playground</h1>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <article class="dialog">
+      <div class="dialog-grid">
+        <div class="product-art" id="modalArt"></div>
+        <div class="dialog-content">
+          <div class="dialog-top">
+            <h3 id="modalTitle"></h3>
+            <button class="close" type="button" id="closeModal" aria-label="Close">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6 6 18"></path>
+                <path d="m6 6 12 12"></path>
+              </svg>
             </button>
-            <div className="grid grid-cols-2 gap-2 sm:flex">
-              <TopButton active={screen === "new"} onClick={() => setScreen("new")}>Yeni Masa Aç</TopButton>
-              <TopButton active={screen === "open"} onClick={() => setScreen("open")}>Açık Masalar</TopButton>
-              <TopButton active={screen === "closed"} onClick={() => setScreen("closed")}>Kapanmış Masalar</TopButton>
-              <TopButton active={screen === "summary"} onClick={() => setScreen("summary")}>Gün Sonu</TopButton>
-            </div>
-          </header>
-
-          {screen === "home" && (
-            <section className="grid flex-1 content-start gap-4">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <HomeAction tone="bg-mint" title="Yeni Masa Aç" detail="Yeni bir açık adisyon başlat" onClick={() => setScreen("new")} />
-                <HomeAction tone="bg-rose" title="Açık Masalar" detail={`${openTables.length} açık masa`} onClick={() => setScreen("open")} />
-                <HomeAction tone="bg-sky" title="Kapanmış Masalar" detail={`${closedTables.length} kayıt`} onClick={() => setScreen("closed")} />
-                <HomeAction tone="bg-lemon" title="Gün Sonu Toplamı" detail={money(daySummary.revenue)} onClick={() => setScreen("summary")} />
-              </div>
-              <section className="grid gap-3 md:grid-cols-3">
-                <StatBox label="Açık Masa" value={openTables.length} tone="bg-white/70" />
-                <StatBox label="Bugünkü Ciro" value={money(daySummary.revenue)} tone="bg-white/70" />
-                <StatBox label="Satılan Ürün" value={daySummary.soldCount} tone="bg-white/70" />
-              </section>
-            </section>
-          )}
-
-          {screen === "new" && (
-            <section className="mx-auto grid w-full max-w-xl gap-4 rounded-lg border border-white/70 bg-paper/90 p-5 shadow-soft">
-              <h2 className="text-2xl font-black">Yeni Masa Aç</h2>
-              <form onSubmit={createTable} className="grid gap-3">
-                <label className="grid gap-2 text-sm font-black text-stone-600">
-                  Masa adı
-                  <input
-                    value={tableName}
-                    onChange={(event) => setTableName(event.target.value)}
-                    autoFocus
-                    className="h-14 rounded-lg border border-black/10 bg-white px-4 text-xl font-black outline-none focus:ring-4 focus:ring-rose/35"
-                    placeholder="Örn. Bahçe 4"
-                  />
-                </label>
-                <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Masa Oluştur</button>
-              </form>
-            </section>
-          )}
-
-          {screen === "open" && (
-            <TableList
-              tables={openTables}
-              onOpen={(id) => { setActiveTableId(id); setScreen("table"); }}
-              onClose={(id) => { setActiveTableId(id); setClosingTableId(id); setScreen("close"); }}
-            />
-          )}
-
-          {screen === "table" && activeTable && (
-            <ActiveTable
-              table={activeTable}
-              category={category}
-              setCategory={setCategory}
-              products={visibleProducts}
-              addProduct={addProduct}
-              changeQuantity={changeQuantity}
-              removeLine={removeLine}
-              changeNote={changeNote}
-              closeTable={() => { setClosingTableId(activeTable.id); setScreen("close"); }}
-            />
-          )}
-
-          {screen === "close" && closingTable && (
-            <ClosePreview table={closingTable} onCancel={() => setScreen("table")} onConfirm={confirmCloseTable} />
-          )}
-
-          {screen === "closed" && (
-            <ClosedTables
-              tables={closedTables}
-              selected={selectedClosed}
-              select={setSelectedClosedId}
-              onPrint={printReceipt}
-              onDelete={deleteClosed}
-            />
-          )}
-
-          {screen === "summary" && <DaySummary summary={daySummary} />}
-        </main>
-      );
-    }
-
-    function TopButton({ active, children, onClick }) {
-      return (
-        <button
-          type="button"
-          onClick={onClick}
-          className={`min-h-12 rounded-lg border px-4 py-2 text-sm font-black shadow-sm transition ${active ? "border-ink bg-ink text-white" : "border-black/10 bg-white/75 text-ink"}`}
-        >
-          {children}
-        </button>
-      );
-    }
-
-    function HomeAction({ tone, title, detail, onClick }) {
-      return (
-        <button type="button" onClick={onClick} className={`${tone} min-h-36 rounded-lg border border-white/70 p-5 text-left shadow-soft transition hover:-translate-y-0.5`}>
-          <span className="block text-2xl font-black">{title}</span>
-          <span className="mt-3 block text-base font-bold text-stone-700">{detail}</span>
-        </button>
-      );
-    }
-
-    function TableList({ tables, onOpen, onClose }) {
-      if (!tables.length) {
-        return <EmptyState title="Açık masa yok" body="Yeni Masa Aç ekranından ilk adisyonu başlatabilirsiniz." />;
-      }
-
-      return (
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {tables.map((table) => (
-            <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-2xl font-black">{table.name}</h2>
-                  <p className="mt-1 text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
-                </div>
-                <strong className="rounded-full bg-lemon px-3 py-1 text-sm">{money(orderTotal(table))}</strong>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <button onClick={() => onOpen(table.id)} className="h-12 rounded-lg bg-mint font-black">Aç</button>
-                <button onClick={() => onClose(table.id)} disabled={!table.items.length} className="h-12 rounded-lg bg-rose font-black disabled:cursor-not-allowed disabled:opacity-45">Kapat</button>
-              </div>
-            </article>
-          ))}
-        </section>
-      );
-    }
-
-    function ActiveTable({ table, category, setCategory, products, addProduct, changeQuantity, removeLine, changeNote, closeTable }) {
-      return (
-        <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">
-          <div className="grid content-start gap-3">
-            <div className="sticky top-0 z-10 -mx-3 bg-mint/70 px-3 py-2 backdrop-blur sm:mx-0 sm:rounded-lg">
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {window.menuCategories.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setCategory(item.id)}
-                    className={`h-12 shrink-0 rounded-full border px-4 text-sm font-black ${category === item.id ? "border-ink bg-lemon" : "border-black/10 bg-white/75"}`}
-                  >
-                    {item.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="grid gap-2">
-              {products.map((product) => (
-                <button key={product.id} onClick={() => addProduct(product)} className="min-h-16 rounded-lg border border-black/10 bg-paper px-4 py-3 text-left shadow-sm transition active:scale-[.99]">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="text-base font-black leading-tight sm:text-lg">{product.name}</h3>
-                      <span className="mt-1 block text-xs font-bold text-stone-500">{categoryMap[product.categoryId]?.name}</span>
-                    </div>
-                    <strong className="shrink-0 rounded-full bg-lemon px-3 py-2 text-base font-black">{money(product.price)}</strong>
-                  </div>
-                </button>
-              ))}
-            </div>
           </div>
-          <aside className="grid content-start gap-3 rounded-lg border border-black/10 bg-white/75 p-3 shadow-soft lg:sticky lg:top-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-2xl font-black">{table.name}</h2>
-                <p className="text-sm font-bold text-stone-500">{itemCount(table)} ürün</p>
-              </div>
-              <strong className="rounded-full bg-lemon px-3 py-2 text-lg">{money(orderTotal(table))}</strong>
-            </div>
-
-            {!table.items.length && <EmptyState title="Adisyon boş" body="Menüden ürüne basarak ekleyin." />}
-
-            <div className="grid gap-2">
-              {table.items.map((line) => (
-                <article key={line.id} className="rounded-lg border border-black/10 bg-paper p-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h3 className="font-black leading-tight">{line.name}</h3>
-                      <p className="text-sm font-bold text-stone-500">{money(line.price)} x {line.quantity}</p>
-                    </div>
-                    <strong>{money(line.price * line.quantity)}</strong>
-                  </div>
-                  <div className="mt-3 grid grid-cols-[48px_48px_48px_1fr] gap-2">
-                    <button onClick={() => changeQuantity(line.id, -1)} className="h-12 rounded-lg bg-mint text-2xl font-black">-</button>
-                    <div className="grid h-12 place-items-center rounded-lg bg-white font-black">{line.quantity}</div>
-                    <button onClick={() => changeQuantity(line.id, 1)} className="h-12 rounded-lg bg-mint text-2xl font-black">+</button>
-                    <button onClick={() => removeLine(line.id)} className="h-12 rounded-lg bg-rose font-black">Sil</button>
-                  </div>
-                  <input
-                    value={line.note}
-                    onChange={(event) => changeNote(line.id, event.target.value)}
-                    className="mt-2 h-11 w-full rounded-lg border border-black/10 bg-white px-3 font-bold outline-none focus:ring-4 focus:ring-sky/35"
-                    placeholder="Ürün notu"
-                  />
-                </article>
-              ))}
-            </div>
-
-            <button onClick={closeTable} disabled={!table.items.length} className="h-14 rounded-lg bg-ink text-lg font-black text-white disabled:cursor-not-allowed disabled:opacity-45">Masayı Kapat</button>
-          </aside>
-        </section>
-      );
-    }
-
-    function ClosePreview({ table, onCancel, onConfirm }) {
-      return (
-        <section className="mx-auto grid w-full max-w-3xl gap-4 rounded-lg border border-black/10 bg-paper/95 p-4 shadow-soft">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-black">Masayı Kapat: {table.name}</h2>
-              <p className="text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
-            </div>
-            <strong className="text-3xl font-black">{money(orderTotal(table))}</strong>
-          </div>
-          <ReceiptTable order={table} />
-          <div className="grid gap-2 sm:grid-cols-2">
-            <button onClick={onCancel} className="h-14 rounded-lg bg-white font-black">Geri Dön</button>
-            <button onClick={onConfirm} className="h-14 rounded-lg bg-ink font-black text-white">Onayla ve Kapat</button>
-          </div>
-        </section>
-      );
-    }
-
-    function ClosedTables({ tables, selected, select, onPrint, onDelete }) {
-      return (
-        <section className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
-          <div className="grid content-start gap-2">
-            {!tables.length && <EmptyState title="Kapanmış masa yok" body="Kapatılan adisyonlar burada listelenir." />}
-            {tables.map((table) => (
-              <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-3 shadow-sm">
-                <button onClick={() => select(table.id)} className="w-full text-left">
-                  <h2 className="text-xl font-black">{table.name}</h2>
-                  <p className="text-sm font-bold text-stone-500">{dateTime(table.closedAt)}</p>
-                  <strong className="mt-2 block text-lg">{money(table.total)}</strong>
-                </button>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button onClick={() => onPrint(table)} className="h-11 rounded-lg bg-mint font-black">Fiş</button>
-                  <button onClick={() => onDelete(table.id)} className="h-11 rounded-lg bg-rose font-black">Sil</button>
-                </div>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-lg border border-black/10 bg-white/75 p-4 shadow-soft">
-            {selected ? (
-              <div className="grid gap-4">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h2 className="text-2xl font-black">{selected.name}</h2>
-                    <p className="text-sm font-bold text-stone-500">Kapanış: {dateTime(selected.closedAt)}</p>
-                  </div>
-                  <strong className="text-3xl font-black">{money(selected.total)}</strong>
-                </div>
-                <ReceiptTable order={selected} />
-                <button onClick={() => onPrint(selected)} className="h-14 rounded-lg bg-ink text-lg font-black text-white">Fiş Çıktısı Al</button>
-              </div>
-            ) : (
-              <EmptyState title="Detay seçilmedi" body="Soldaki kapanmış adisyonlardan birini açın." />
-            )}
-          </div>
-        </section>
-      );
-    }
-
-    function ReceiptTable({ order }) {
-      return (
-        <div className="overflow-x-auto rounded-lg border border-black/10 bg-white">
-          <table className="w-full min-w-[560px] text-left">
-            <thead className="bg-mint/60 text-sm">
-              <tr>
-                <th className="p-3">Ürün</th>
-                <th className="p-3 text-right">Adet</th>
-                <th className="p-3 text-right">Birim Fiyat</th>
-                <th className="p-3 text-right">Ara Toplam</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items.map((item) => (
-                <tr key={item.id} className="border-t border-black/10">
-                  <td className="p-3">
-                    <strong>{item.name}</strong>
-                    {item.note && <div className="text-xs font-bold text-stone-500">Not: {item.note}</div>}
-                  </td>
-                  <td className="p-3 text-right font-bold">{item.quantity}</td>
-                  <td className="p-3 text-right font-bold">{money(item.price)}</td>
-                  <td className="p-3 text-right font-black">{money(item.price * item.quantity)}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="border-t-2 border-black/20 bg-lemon/70">
-                <td className="p-3 text-xl font-black" colSpan="3">Genel Toplam</td>
-                <td className="p-3 text-right text-xl font-black">{money(orderTotal(order))}</td>
-              </tr>
-            </tfoot>
-          </table>
+          <div class="dialog-price" id="modalPrice"></div>
+          <p id="modalDescription"></p>
+          <div class="chips" id="modalChips"></div>
         </div>
-      );
-    }
+      </div>
+    </article>
+  </div>
 
-    function DaySummary({ summary }) {
-      return (
-        <section className="grid gap-4">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <StatBox label="Toplam Ciro" value={money(summary.revenue)} tone="bg-lemon" />
-            <StatBox label="Satılan Ürün" value={summary.soldCount} tone="bg-mint" />
-            <StatBox label="En Çok Satan Ürün" value={summary.topProduct || "-"} tone="bg-rose" />
-            <StatBox label="En Çok Satan Kategori" value={summary.topCategory || "-"} tone="bg-sky" />
-          </div>
-          <div className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
-            <h2 className="text-2xl font-black">Gün Sonu Toplamı</h2>
-            <p className="mt-2 text-sm font-bold text-stone-500">Hesaplama kapanmış masalardan yapılır.</p>
-          </div>
-        </section>
-      );
-    }
+  <script>
+    const translations = {
+      tr: {
+        heroTitle: "Menü",
+        heroLead: "Macaron dünyasında kahvaltı, tatlı, kahve ve atıştırmalıklar.",
+        search: "Menüde ara",
+        all: "Tümü",
+        itemCount: count => `${count} ürün`,
+        category: "Kategori",
+        price: "Fiyat",
+        detail: "Detay",
+        defaultDetail: item => `${item.name.tr} macaronplayground menüsünde ${item.category.tr.toLowerCase()} kategorisinde yer alır.`
+      },
+      en: {
+        heroTitle: "Menu",
+        heroLead: "Breakfast, desserts, coffee and bites in a soft macaron-colored world.",
+        search: "Search menu",
+        all: "All",
+        itemCount: count => `${count} items`,
+        category: "Category",
+        price: "Price",
+        detail: "Detail",
+        defaultDetail: item => `${item.name.en} is listed under ${item.category.en.toLowerCase()} on the macaronplayground menu.`
+      }
+    };
 
-    function buildDaySummary(closedTables) {
-      const products = {};
-      const categories = {};
-      let revenue = 0;
-      let soldCount = 0;
+    const categories = [
+      { id: "all", tr: "Tümü", en: "All" },
+      { id: "breakfast", tr: "Kahvaltılar", en: "Breakfast" },
+      { id: "toast", tr: "Tostlar", en: "Toasts" },
+      { id: "sandwich", tr: "Sandviçler", en: "Sandwiches" },
+      { id: "food", tr: "Yiyecekler", en: "Food" },
+      { id: "dessert", tr: "Tatlılar", en: "Desserts" },
+      { id: "icecream", tr: "Dondurma", en: "Ice Cream" },
+      { id: "coffee", tr: "Kahveler", en: "Coffee" },
+      { id: "tea", tr: "Çaylar", en: "Tea" },
+      { id: "colddrinks", tr: "Soğuk İçecekler", en: "Cold Drinks" }
+    ];
 
-      closedTables.forEach((table) => {
-        revenue += table.total || orderTotal(table);
-        table.items.forEach((item) => {
-          soldCount += item.quantity;
-          products[item.menuId] = products[item.menuId] || { name: item.name, quantity: 0 };
-          products[item.menuId].quantity += item.quantity;
-          categories[item.categoryId] = categories[item.categoryId] || { name: item.categoryName, quantity: 0 };
-          categories[item.categoryId].quantity += item.quantity;
-        });
-      });
+    const categoryMap = new Map(categories.map(category => [category.id, category]));
 
-      const topProduct = Object.values(products).sort((a, b) => b.quantity - a.quantity)[0];
-      const topCategory = Object.values(categories).sort((a, b) => b.quantity - a.quantity)[0];
+    const palettes = [
+      "linear-gradient(135deg, #f7a7b6, #fff06b)",
+      "linear-gradient(135deg, #bfe8df, #fff6ef)",
+      "linear-gradient(135deg, #82c9ec, #f7a7b6)",
+      "linear-gradient(135deg, #fff06b, #bfe8df)",
+      "linear-gradient(135deg, #fff6ef, #82c9ec)"
+    ];
 
+    const items = [
+      item("breakfast", "Kahvaltı Tabağı", "Breakfast Plate", 450, "1 bardak çay ile servis edilir.", "Served with one glass of Turkish tea.", "B", "assets/kahvalti-tabagi.png"),
+      item("breakfast", "Serpme Kahvaltı 2 Kişilik", "Mixed Breakfast for Two", 1200, "Rezervasyon gereklidir.", "Reservation required.", "B", "assets/serpme-kahvalti.png"),
+      item("toast", "Kaşarlı Tost", "Kashar Cheese Toast", 280, "Sıcak ve çıtır tost.", "Warm, crisp toast.", "T", "assets/kasarli-tost.png"),
+      item("toast", "Beyaz Peynirli, Domatesli, Kekikli Tost", "White Cheese, Tomato and Thyme Toast", 280, "Beyaz peynir, domates ve kekik.", "White cheese, tomato and thyme.", "T", "assets/beyaz-peynirli-domatesli-kekikli-tost.png"),
+      item("toast", "Karışık Tost", "Mixed Toast", 300, "Klasik karışık tost.", "Classic mixed toast.", "T", "assets/karisik-tost.png"),
+      item("sandwich", "Peynirli Sandviç", "Cheese Sandwich", 280, "Peynirli sandviç.", "Cheese sandwich.", "S", "assets/peynirli-sandvic.png"),
+      item("sandwich", "Hindi Fümeli Sandviç", "Smoked Turkey Sandwich", 300, "Hindi füme ile hazırlanır.", "Prepared with smoked turkey.", "S", "assets/hindi-fumeli-sandvic.png"),
+      item("food", "Günün Çorbası", "Soup of the Day", 185, "Ev yapımıdır.", "Homemade.", "Ç", "assets/gunun-corbasi.png"),
+      item("food", "Patates Kızartması", "French Fries", 200, "Çıtır patates kızartması.", "Crispy fries.", "F", "assets/patates-kizartmasi.png"),
+      item("food", "Köfte", "Meatballs", 550, "Patates kızartması ile servis edilir.", "Served with french fries.", "K", "assets/kofte.png"),
+      item("food", "Çocuk Köfte", "Kids Meatballs", 425, "Patates kızartması ile servis edilir.", "Served with french fries.", "K", "assets/cocuk-kofte.png"),
+      item("food", "Hamburger", "Hamburger", 475, "Patates kızartması ile servis edilir.", "Served with french fries.", "H", "assets/hamburger.png"),
+      item("food", "Soğan Halkası", "Onion Rings", 225, "Sıcak atıştırmalık.", "Warm snack.", "O", "assets/sogan-halkasi.png"),
+      item("food", "Makarna (Tereyağlı)", "Pasta with Butter", 350, "Tereyağlı makarna.", "Pasta with butter.", "M", "assets/tereyagli-makarna.png"),
+      item("food", "Makarna (Pestolu)", "Pesto Pasta", 400, "Pesto soslu makarna.", "Pasta with pesto sauce.", "M", "assets/pestolu-makarna.png"),
+      item("food", "Sıcak Sepet", "Hot Basket", 400, "Paylaşmalık sıcak sepet.", "Shareable hot basket.", "S", "assets/sicak-sepet.png"),
+      item("food", "Omlet", "Omelette", 200, "Klasik omlet.", "Classic omelette.", "O", "assets/omlet.png"),
+      item("food", "Kaşarlı Omlet", "Kashar Cheese Omelette", 250, "Kaşarlı omlet.", "Omelette with kashar cheese.", "O", "assets/kasarli-omlet.png"),
+      item("dessert", "Waffle", "Waffle", 450, "Tatlı menüsünden waffle.", "Waffle from the dessert menu.", "W", "assets/waffle.png"),
+      item("dessert", "Vişneli Mozaik Pasta", "Sour Cherry Mosaic Cake", 330, "Vişneli mozaik pasta.", "Sour cherry mosaic cake.", "P", "assets/visneli-mozaik-pasta.png"),
+      item("dessert", "Eliminasyon Keki", "Elimination Cake", 350, "Menüdeki özel kek.", "Special cake from the menu.", "K", "assets/eliminasyon-keki.png"),
+      item("dessert", "Kurabiye (Porsiyon)", "Cookie Portion", 180, "Porsiyon kurabiye.", "Cookie portion.", "C", "assets/kurabiye-porsiyon.png"),
+      item("dessert", "Frambuazlı Cheesecake", "Raspberry Cheesecake", 360, "Frambuazlı cheesecake.", "Raspberry cheesecake.", "C", "assets/frambuazli-cheesecake.png"),
+      item("dessert", "Yaban Mersinli Cheesecake", "Blueberry Cheesecake", 360, "Yaban mersinli cheesecake.", "Blueberry cheesecake.", "C", "assets/yaban-mersinli-cheesecake.png"),
+      item("dessert", "Lotuslu Cheesecake", "Lotus Cheesecake", 360, "Lotuslu cheesecake.", "Lotus cheesecake.", "C", "assets/lotuslu-cheesecake.png"),
+      item("dessert", "Macaron", "Macaron", 50, "Adet macaron.", "Single macaron.", "M", "assets/macaron-urun.png"),
+      item("dessert", "Glutensiz Browni", "Gluten-Free Brownie", 280, "Glutensiz browni.", "Gluten-free brownie.", "B", "assets/glutensiz-browni.png"),
+      item("dessert", "Sufle", "Souffle", 275, "Sıcak sufle.", "Warm souffle.", "S", "assets/sufle.png"),
+      item("icecream", "Çilekli (Top)", "Strawberry Scoop", 75, "Top dondurma.", "Ice cream scoop.", "D", "assets/cilekli-dondurma.png"),
+      item("icecream", "Çikolatalı (Top)", "Chocolate Scoop", 75, "Top dondurma.", "Ice cream scoop.", "D", "assets/cikolatali-dondurma.png"),
+      item("coffee", "Americano", "Americano", 160, "Kahveler menüsünden.", "From the coffee menu.", "A", "assets/americano.png"),
+      item("coffee", "Ice Americano", "Iced Americano", 170, "Soğuk kahve.", "Iced coffee.", "A", "assets/ice-americano.png"),
+      item("coffee", "Espresso", "Espresso", 100, "Kısa ve yoğun kahve.", "Short and intense coffee.", "E", "assets/espresso.png"),
+      item("coffee", "Double Espresso", "Double Espresso", 130, "Çift shot espresso.", "Double shot espresso.", "E", "assets/double-espresso.png"),
+      item("coffee", "Latte", "Latte", 180, "Sütlü kahve.", "Coffee with milk.", "L", "assets/latte.png"),
+      item("coffee", "Ice Latte", "Iced Latte", 200, "Soğuk sütlü kahve.", "Iced coffee with milk.", "L", "assets/ice-latte.png"),
+      item("coffee", "Flat White", "Flat White", 180, "Sütlü espresso bazlı kahve.", "Milk-based espresso drink.", "F", "assets/flat-white.png"),
+      item("coffee", "Ice Flat White", "Iced Flat White", 200, "Soğuk flat white.", "Iced flat white.", "F", "assets/ice-flat-white.png"),
+      item("coffee", "Cappuccino", "Cappuccino", 180, "Espresso, süt ve köpük.", "Espresso, milk and foam.", "C", "assets/cappuccino.png"),
+      item("coffee", "Filtre Kahve", "Filter Coffee", 160, "Sıcak filtre kahve.", "Hot filter coffee.", "F", "assets/filtre-kahve.png"),
+      item("coffee", "Ice Filtre Kahve", "Iced Filter Coffee", 180, "Soğuk filtre kahve.", "Iced filter coffee.", "F", "assets/ice-filtre-kahve.png"),
+      item("coffee", "Sütlü Filtre Kahve", "Filter Coffee with Milk", 180, "Sütlü filtre kahve.", "Filter coffee with milk.", "F", "assets/sutlu-filtre-kahve.png"),
+      item("coffee", "Vanilyalı Filtre Kahve", "Vanilla Filter Coffee", 190, "Vanilyalı filtre kahve.", "Vanilla filter coffee.", "V", "assets/vanilyali-filtre-kahve.png"),
+      item("coffee", "Türk Kahvesi", "Turkish Coffee", 120, "Geleneksel Türk kahvesi.", "Traditional Turkish coffee.", "T", "assets/turk-kahvesi.png"),
+      item("coffee", "Double Türk Kahvesi", "Double Turkish Coffee", 150, "Double Türk kahvesi.", "Double Turkish coffee.", "T", "assets/double-turk-kahvesi.png"),
+      item("coffee", "Dibek Kahvesi", "Dibek Coffee", 130, "Dibek kahvesi.", "Dibek coffee.", "D", "assets/dibek-kahvesi.png"),
+      item("coffee", "Sıcak Çikolata", "Hot Chocolate", 195, "Sıcak çikolata.", "Hot chocolate.", "Ç", "assets/sicak-cikolata.png"),
+      item("tea", "Çay", "Turkish Tea", 60, "Bardak çay.", "Glass of Turkish tea.", "Ç", "assets/cay.png"),
+      item("tea", "Çay (Fincan)", "Tea Cup", 80, "Fincan çay.", "Cup of tea.", "Ç", "assets/cay-fincan.png"),
+      item("tea", "Bitki Çayı", "Herbal Tea", 175, "Bitki çayı.", "Herbal tea.", "B", "assets/bitki-cayi.png"),
+      item("tea", "Yeşil Çay", "Green Tea", 175, "Yeşil çay.", "Green tea.", "Y", "assets/yesil-cay.png"),
+      item("colddrinks", "Limonata", "Lemonade", 180, "Soğuk limonata.", "Cold lemonade.", "L"),
+      item("colddrinks", "Portakal Suyu", "Orange Juice", 190, "Portakal suyu.", "Orange juice.", "P"),
+      item("colddrinks", "Milkshake (Günün Meyvesi)", "Milkshake (Fruit of the Day)", 220, "Günün meyvesi ile hazırlanır.", "Prepared with the fruit of the day.", "M"),
+      item("colddrinks", "Su", "Water", 40, "Şişe su.", "Bottled water.", "S"),
+      item("colddrinks", "Sade Soda", "Plain Mineral Water", 65, "Sade soda.", "Plain mineral water.", "S"),
+      item("colddrinks", "Meyveli Soda", "Fruit Mineral Water", 75, "Meyveli soda.", "Fruit mineral water.", "M"),
+      item("colddrinks", "Churchill", "Churchill", 100, "Limonlu sodalı soğuk içecek.", "Cold sparkling lemon drink.", "C"),
+      item("colddrinks", "Cola", "Cola", 95, "Soğuk içecek.", "Cold drink.", "C"),
+      item("colddrinks", "Fanta", "Fanta", 95, "Soğuk içecek.", "Cold drink.", "F"),
+      item("colddrinks", "Ice Tea", "Iced Tea", 90, "Soğuk çay.", "Iced tea.", "I"),
+      item("colddrinks", "Ayran", "Ayran", 50, "Soğuk ayran.", "Cold ayran.", "A"),
+      item("colddrinks", "Capri Sun", "Capri Sun", 75, "Meyveli içecek.", "Fruit drink.", "C")
+    ].map((entry, index) => ({
+      ...entry,
+      id: `${entry.categoryId}-${index}`,
+      palette: palettes[index % palettes.length],
+      category: categoryMap.get(entry.categoryId)
+    }));
+
+    let currentLang = "tr";
+    let currentCategory = "all";
+    const productGrid = document.querySelector("#productGrid");
+    const tabs = document.querySelector("#tabs");
+    const search = document.querySelector("#search");
+    const categoryTitle = document.querySelector("#categoryTitle");
+    const countText = document.querySelector("#countText");
+    const modal = document.querySelector("#modal");
+    const modalArt = document.querySelector("#modalArt");
+    const modalTitle = document.querySelector("#modalTitle");
+    const modalPrice = document.querySelector("#modalPrice");
+    const modalDescription = document.querySelector("#modalDescription");
+    const modalChips = document.querySelector("#modalChips");
+    const closeModal = document.querySelector("#closeModal");
+    const welcomePopup = document.querySelector("#welcomePopup");
+    const welcomeEnter = document.querySelector("#welcomeEnter");
+    const welcomeClose = document.querySelector("#welcomeClose");
+
+    function item(categoryId, tr, en, price, descTr, descEn, icon, image = "") {
       return {
-        revenue,
-        soldCount,
-        topProduct: topProduct ? `${topProduct.name} (${topProduct.quantity})` : "",
-        topCategory: topCategory ? `${topCategory.name} (${topCategory.quantity})` : ""
+        categoryId,
+        name: { tr, en },
+        price,
+        description: { tr: descTr, en: descEn },
+        icon,
+        image
       };
     }
 
-    function receiptMarkup(order) {
-      const rows = order.items.map((item) => `
-        <tr>
-          <td>${escapeHtml(item.name)}${item.note ? `<small>Not: ${escapeHtml(item.note)}</small>` : ""}</td>
-          <td>${item.quantity}</td>
-          <td>${money(item.price)}</td>
-          <td>${money(item.price * item.quantity)}</td>
-        </tr>
+    function formatPrice(price) {
+      return `${price}₺`;
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = currentLang;
+      document.querySelectorAll("[data-i18n]").forEach(node => {
+        node.textContent = translations[currentLang][node.dataset.i18n];
+      });
+      search.placeholder = translations[currentLang].search;
+      document.querySelectorAll(".lang button").forEach(button => {
+        button.setAttribute("aria-pressed", String(button.dataset.lang === currentLang));
+      });
+      renderTabs();
+      renderProducts();
+    }
+
+    function renderTabs() {
+      tabs.innerHTML = categories.map(category => `
+        <button type="button" role="tab" data-category="${category.id}" aria-selected="${category.id === currentCategory}">
+          ${category[currentLang]}
+        </button>
       `).join("");
-
-      return `
-        <style>
-          .receipt { width: 80mm; margin: 0 auto; color: #111; font-family: Arial, sans-serif; }
-          .receipt h1 { margin: 0 0 4mm; font-size: 18px; text-align: center; }
-          .receipt p { margin: 0 0 2mm; font-size: 12px; }
-          .receipt table { width: 100%; border-collapse: collapse; font-size: 11px; }
-          .receipt th, .receipt td { border-bottom: 1px solid #ddd; padding: 5px 2px; text-align: right; vertical-align: top; }
-          .receipt th:first-child, .receipt td:first-child { text-align: left; }
-          .receipt small { display: block; color: #555; margin-top: 2px; }
-          .receipt .total { font-size: 16px; font-weight: 800; text-align: right; margin-top: 4mm; }
-        </style>
-        <section class="receipt">
-          <h1>Macaron Playground</h1>
-          <p><strong>Masa:</strong> ${escapeHtml(order.name)}</p>
-          <p><strong>Açılış:</strong> ${dateTime(order.openedAt)}</p>
-          <p><strong>Kapanış:</strong> ${dateTime(order.closedAt || new Date().toISOString())}</p>
-          <table>
-            <thead><tr><th>Ürün</th><th>Adet</th><th>Birim</th><th>Toplam</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-          <div class="total">Genel Toplam: ${money(orderTotal(order))}</div>
-        </section>
-      `;
     }
 
-    function escapeHtml(value) {
-      return String(value).replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[char]));
-    }
-
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
+    function filteredItems() {
+      const query = search.value.trim().toLocaleLowerCase("tr-TR");
+      return items.filter(entry => {
+        const matchesCategory = currentCategory === "all" || entry.categoryId === currentCategory;
+        const haystack = `${entry.name.tr} ${entry.name.en} ${entry.category.tr} ${entry.category.en}`.toLocaleLowerCase("tr-TR");
+        return matchesCategory && (!query || haystack.includes(query));
       });
     }
+
+    function renderProducts() {
+      const visible = filteredItems();
+      const activeCategory = categoryMap.get(currentCategory);
+      categoryTitle.textContent = currentCategory === "all" ? translations[currentLang].all : activeCategory[currentLang];
+      countText.textContent = translations[currentLang].itemCount(visible.length);
+      productGrid.innerHTML = visible.map(entry => `
+        <article class="card">
+          <button class="product-button" type="button" data-id="${entry.id}" aria-label="${entry.name[currentLang]}">
+            <div class="product-art ${entry.image ? "has-photo" : ""}" style="--tile: ${entry.palette}">
+              ${entry.image ? `<img src="${entry.image}" alt="${entry.name[currentLang]}">` : `<b>${entry.icon}</b>`}
+            </div>
+            <div class="product-body">
+              <h3 class="product-title">${entry.name[currentLang]}</h3>
+              <div class="product-meta">
+                <span>${entry.category[currentLang]}</span>
+                <strong class="price">${formatPrice(entry.price)}</strong>
+              </div>
+            </div>
+          </button>
+        </article>
+      `).join("");
+    }
+
+    function openProduct(id) {
+      const entry = items.find(product => product.id === id);
+      if (!entry) return;
+      modalArt.style.setProperty("--tile", entry.palette);
+      modalArt.classList.toggle("has-photo", Boolean(entry.image));
+      modalArt.innerHTML = entry.image ? `<img src="${entry.image}" alt="${entry.name[currentLang]}">` : `<b>${entry.icon}</b>`;
+      modalTitle.textContent = entry.name[currentLang];
+      modalPrice.textContent = formatPrice(entry.price);
+      modalDescription.textContent = entry.description[currentLang] || translations[currentLang].defaultDetail(entry);
+      modalChips.innerHTML = [
+        `${translations[currentLang].category}: ${entry.category[currentLang]}`,
+        `${translations[currentLang].price}: ${formatPrice(entry.price)}`
+      ].map(text => `<span class="chip">${text}</span>`).join("");
+      modal.setAttribute("open", "");
+      closeModal.focus();
+    }
+
+    function hideModal() {
+      modal.removeAttribute("open");
+    }
+
+    function hideWelcome() {
+      welcomePopup.hidden = true;
+      document.body.classList.remove("welcome-open");
+    }
+
+    document.querySelector(".lang").addEventListener("click", event => {
+      const button = event.target.closest("button[data-lang]");
+      if (!button) return;
+      currentLang = button.dataset.lang;
+      applyLanguage();
+    });
+
+    tabs.addEventListener("click", event => {
+      const button = event.target.closest("button[data-category]");
+      if (!button) return;
+      currentCategory = button.dataset.category;
+      renderTabs();
+      renderProducts();
+    });
+
+    search.addEventListener("input", renderProducts);
+
+    productGrid.addEventListener("click", event => {
+      const button = event.target.closest("button[data-id]");
+      if (!button) return;
+      openProduct(button.dataset.id);
+    });
+
+    closeModal.addEventListener("click", hideModal);
+    modal.addEventListener("click", event => {
+      if (event.target === modal) hideModal();
+    });
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !welcomePopup.hidden) hideWelcome();
+      if (event.key === "Escape") hideModal();
+    });
+
+    applyLanguage();
+    document.body.classList.add("welcome-open");
+    welcomeEnter.addEventListener("click", hideWelcome);
+    welcomeClose.addEventListener("click", hideWelcome);
   </script>
 </body>
 </html>
