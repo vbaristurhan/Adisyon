@@ -7,7 +7,8 @@ window.menuCategories = [
   { id: "dessert", name: "Tatlılar" },
   { id: "icecream", name: "Dondurma" },
   { id: "coffee", name: "Kahveler" },
-  { id: "tea", name: "Çaylar" }
+  { id: "tea", name: "Çaylar" },
+  { id: "cold-drinks", name: "Soğuk İçecekler" }
 ];
 
 window.menuItems = [
@@ -61,5 +62,17 @@ window.menuItems = [
   { id: "tea-1", categoryId: "tea", name: "Çay", price: 60 },
   { id: "tea-2", categoryId: "tea", name: "Çay (Fincan)", price: 80 },
   { id: "tea-3", categoryId: "tea", name: "Bitki Çayı", price: 175 },
-  { id: "tea-4", categoryId: "tea", name: "Yeşil Çay", price: 175 }
+  { id: "tea-4", categoryId: "tea", name: "Yeşil Çay", price: 175 },
+  { id: "cold-drinks-1", categoryId: "cold-drinks", name: "Limonata", price: 180 },
+  { id: "cold-drinks-2", categoryId: "cold-drinks", name: "Portakal Suyu", price: 190 },
+  { id: "cold-drinks-3", categoryId: "cold-drinks", name: "Milkshake (Günün Meyvesi)", price: 220 },
+  { id: "cold-drinks-4", categoryId: "cold-drinks", name: "Su", price: 40 },
+  { id: "cold-drinks-5", categoryId: "cold-drinks", name: "Sade Soda", price: 65 },
+  { id: "cold-drinks-6", categoryId: "cold-drinks", name: "Meyveli Soda", price: 75 },
+  { id: "cold-drinks-7", categoryId: "cold-drinks", name: "Churchill", price: 100 },
+  { id: "cold-drinks-8", categoryId: "cold-drinks", name: "Cola", price: 95 },
+  { id: "cold-drinks-9", categoryId: "cold-drinks", name: "Fanta", price: 95 },
+  { id: "cold-drinks-10", categoryId: "cold-drinks", name: "Ice Tea", price: 90 },
+  { id: "cold-drinks-11", categoryId: "cold-drinks", name: "Ayran", price: 50 },
+  { id: "cold-drinks-12", categoryId: "cold-drinks", name: "Capri Sun", price: 75 }
 ];
