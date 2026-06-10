@@ -37,7 +37,7 @@ window.menuItems = [
   { id: "dessert-6", categoryId: "dessert", name: "Yaban Mersinli Cheesecake", price: 360 },
   { id: "dessert-7", categoryId: "dessert", name: "Lotuslu Cheesecake", price: 360 },
   { id: "dessert-8", categoryId: "dessert", name: "Macaron", price: 50 },
-  { id: "dessert-9", categoryId: "dessert", name: "Glutensiz Browni", price: 280 },
+  { id: "dessert-9", categoryId: "dessert", name: "Glutensiz Browni", price: 380 },
   { id: "dessert-10", categoryId: "dessert", name: "Sufle", price: 275 },
   { id: "icecream-1", categoryId: "icecream", name: "Çilekli (Top)", price: 75 },
   { id: "icecream-2", categoryId: "icecream", name: "Çikolatalı (Top)", price: 75 },
