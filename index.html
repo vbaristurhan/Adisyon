@@ -1,1031 +1,1058 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>macaronplayground QR Menu</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Macaron Playground Adisyon</title>
+  <meta name="theme-color" content="#bfe8df" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Macaron Adisyon" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icons/icon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Trebuchet MS", "Segoe UI", "system-ui", "sans-serif"]
+          },
+          colors: {
+            cream: "#fff6ef",
+            paper: "#fffdf8",
+            ink: "#2c2524",
+            rose: "#f7a7b6",
+            mint: "#bfe8df",
+            lemon: "#fff06b",
+            sky: "#82c9ec",
+            peach: "#ffe3d4"
+          },
+          boxShadow: {
+            soft: "0 18px 50px rgba(76, 112, 105, .16)"
+          }
+        }
+      }
+    };
+  </script>
   <style>
-    :root {
-      color-scheme: light;
-      --cream: #fff6ef;
-      --paper: #fffdf8;
-      --ink: #2c2524;
-      --muted: #746763;
-      --pink: #f7a7b6;
-      --mint: #bfe8df;
-      --lemon: #fff06b;
-      --blue: #82c9ec;
-      --peach: #ffe3d4;
-      --line: rgba(58, 79, 75, .16);
-      --shadow: 0 20px 60px rgba(76, 112, 105, .16);
-      --radius: 8px;
-      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--ink);
       background:
-        linear-gradient(120deg, rgba(247, 167, 182, .42) 0 14%, transparent 14% 100%),
-        linear-gradient(300deg, rgba(255, 240, 107, .5) 0 11%, transparent 11% 100%),
+        linear-gradient(120deg, rgba(247, 167, 182, .35) 0 14%, transparent 14% 100%),
+        linear-gradient(300deg, rgba(255, 240, 107, .44) 0 12%, transparent 12% 100%),
         linear-gradient(135deg, #e4fbf6 0%, #c9efe7 42%, #fff7eb 100%);
     }
 
-    body.welcome-open {
-      overflow: hidden;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .app {
-      width: min(1120px, 100%);
-      margin: 0 auto;
-      padding: 22px clamp(14px, 4vw, 34px) 42px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 14px;
-      padding: 8px 0 18px;
-    }
-
-    .brand {
-      min-width: 0;
-    }
-
-    .brand-logo {
-      display: block;
-      width: clamp(178px, 34vw, 300px);
-      height: auto;
-      border-radius: var(--radius);
-      filter: drop-shadow(0 12px 18px rgba(70, 100, 94, .18));
-    }
-
-    .lang {
-      display: inline-grid;
-      grid-template-columns: repeat(2, 1fr);
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, .55);
-      border-radius: 999px;
-      padding: 4px;
-      flex: 0 0 auto;
-    }
-
-    .lang button {
-      min-width: 48px;
-      border: 0;
-      border-radius: 999px;
-      background: transparent;
-      color: var(--muted);
-      padding: 9px 12px;
-      font-weight: 800;
-    }
-
-    .lang button[aria-pressed="true"] {
-      background: #77c6e9;
-      color: #17292d;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(280px, 1.1fr);
-      align-items: stretch;
-      gap: 18px;
-      min-height: 280px;
-      margin-bottom: 18px;
-    }
-
-    .hero-copy {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: clamp(16px, 4vw, 28px) 0;
-    }
-
-    h1 {
-      margin: 0;
-      max-width: 11ch;
-      font-size: clamp(42px, 10vw, 86px);
-      line-height: .9;
-      letter-spacing: 0;
-      color: #3b312e;
-      text-transform: uppercase;
-      text-shadow: 0 10px 20px rgba(255, 255, 255, .62), 0 2px 0 rgba(255, 240, 107, .38);
-    }
-
-    .lead {
-      max-width: 48ch;
-      margin: 18px 0 0;
-      color: transparent;
-      background: linear-gradient(90deg, #5aa99c, #df8394, #c7ad22, #55a8cf);
-      -webkit-background-clip: text;
-      background-clip: text;
-      font-size: clamp(16px, 2.4vw, 20px);
-      line-height: 1.45;
-      font-weight: 800;
-    }
-
-    .hero-media {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--radius);
-      min-height: 260px;
-      background:
-        linear-gradient(120deg, rgba(247, 167, 182, .7) 0 16%, transparent 16% 100%),
-        linear-gradient(300deg, rgba(255, 240, 107, .75) 0 18%, transparent 18% 100%),
-        linear-gradient(135deg, #d5f6f0, #fff8ef);
-      box-shadow: var(--shadow);
-      padding: clamp(14px, 4vw, 30px);
-    }
-
-    .hero-media img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 18px 22px rgba(46, 68, 65, .16));
-    }
-
-    .hero-media::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border: 1px solid rgba(255, 255, 255, .56);
-      pointer-events: none;
-    }
-
-    .controls {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display: grid;
-      gap: 12px;
-      padding: 10px 0 14px;
-      background: linear-gradient(180deg, rgba(228, 251, 246, .98), rgba(228, 251, 246, .9) 70%, transparent);
-      backdrop-filter: blur(12px);
-    }
-
-    .search {
-      display: grid;
-      grid-template-columns: 20px 1fr;
-      align-items: center;
-      gap: 8px;
-      height: 46px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 0 16px;
-      background: rgba(255, 255, 255, .76);
-    }
-
-    .search input {
-      min-width: 0;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--ink);
-      font-size: 16px;
-    }
-
-    .search svg {
-      width: 18px;
-      height: 18px;
-      color: var(--muted);
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 2px;
-    }
-
-    .tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    .tabs button {
-      flex: 0 0 auto;
-      min-height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, .65);
-      color: #524641;
-      padding: 10px 14px;
-      font-weight: 850;
-      white-space: nowrap;
-    }
-
-    .tabs button[aria-selected="true"] {
-      background: var(--lemon);
-      color: #2c2524;
-      border-color: rgba(44, 37, 36, .18);
-    }
-
-    .section-title {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
-      margin: 22px 0 12px;
-    }
-
-    .section-title h2 {
-      margin: 0;
-      font-size: clamp(24px, 5vw, 38px);
-      line-height: 1;
-      letter-spacing: 0;
-    }
-
-    .section-title p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      text-align: right;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      overflow: hidden;
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255, 253, 248, .9);
-      box-shadow: 0 12px 30px rgba(76, 112, 105, .11);
-      transition: transform .18s ease, box-shadow .18s ease;
-    }
-
-    .card:hover,
-    .card:focus-within {
-      transform: translateY(-2px);
-      box-shadow: 0 16px 34px rgba(76, 112, 105, .16);
-    }
-
-    .product-button {
-      display: block;
-      width: 100%;
-      border: 0;
-      padding: 0;
-      background: transparent;
-      color: inherit;
-      text-align: left;
-    }
-
-    .product-art {
-      position: relative;
-      display: grid;
-      place-items: center;
-      aspect-ratio: 4 / 3;
-      overflow: hidden;
-      background: var(--tile, linear-gradient(135deg, var(--pink), var(--mint)));
-    }
-
-    .product-art::before {
-      content: "";
-      position: absolute;
-      inset: 12%;
-      border-radius: 50%;
-      border: 2px dashed rgba(255, 255, 255, .58);
-    }
-
-    .product-art b {
-      position: relative;
-      display: grid;
-      place-items: center;
-      width: min(92px, 38%);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, .66);
-      color: rgba(44, 37, 36, .82);
-      font-size: clamp(30px, 6vw, 46px);
-      box-shadow: inset 0 -8px 0 rgba(44, 37, 36, .06);
-    }
-
-    .product-art.has-photo {
-      background: #fff;
-    }
-
-    .product-art.has-photo::before {
-      display: none;
-    }
-
-    .product-art img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .product-body {
-      display: grid;
-      gap: 8px;
-      min-height: 118px;
-      padding: 12px;
-    }
-
-    .product-title {
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.2;
-      letter-spacing: 0;
-    }
-
-    .product-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: auto;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .price {
-      color: var(--ink);
-      font-size: 17px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    .note {
-      margin: 18px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      text-align: center;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 80;
-      display: none;
-      padding: 18px;
-      background: rgba(44, 37, 36, .36);
-      backdrop-filter: blur(10px);
-    }
-
-    .modal[open] {
-      display: grid;
-      place-items: center;
-    }
-
-    .dialog {
-      width: min(820px, 100%);
-      max-height: min(780px, calc(100vh - 36px));
-      overflow: auto;
-      border-radius: var(--radius);
-      background: var(--paper);
-      box-shadow: 0 30px 80px rgba(44, 37, 36, .28);
-    }
-
-    .dialog-grid {
-      display: grid;
-      grid-template-columns: minmax(220px, .85fr) minmax(0, 1fr);
-    }
-
-    .dialog .product-art {
-      height: 100%;
-      min-height: 320px;
-      aspect-ratio: auto;
-    }
-
-    .dialog-content {
-      padding: clamp(18px, 4vw, 30px);
-    }
-
-    .dialog-top {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .dialog h3 {
-      margin: 0;
-      font-size: clamp(28px, 6vw, 44px);
-      line-height: 1;
-      letter-spacing: 0;
-    }
-
-    .close {
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      width: 42px;
-      height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      background: #fff;
-      color: var(--ink);
-    }
-
-    .close svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .dialog-price {
-      margin: 16px 0;
-      font-size: 30px;
-      font-weight: 900;
-    }
-
-    .dialog p {
-      color: #5d504b;
-      line-height: 1.6;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 18px;
-    }
-
-    .chip {
-      border-radius: 999px;
-      background: rgba(189, 217, 209, .48);
-      color: #3e5852;
-      padding: 8px 10px;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .welcome {
-      position: fixed;
-      inset: 0;
-      z-index: 120;
-      display: grid;
-      place-items: center;
-      padding: clamp(14px, 4vw, 30px);
-      background: rgba(48, 42, 39, .34);
-      backdrop-filter: blur(14px);
-    }
-
-    .welcome[hidden] {
-      display: none;
-    }
-
-    .welcome-card {
-      position: relative;
-      overflow: hidden;
-      width: min(520px, 100%);
-      border: 1px solid rgba(255, 255, 255, .74);
-      border-radius: 18px;
-      background:
-        linear-gradient(130deg, rgba(247, 167, 182, .28) 0 22%, transparent 22% 100%),
-        linear-gradient(310deg, rgba(191, 232, 223, .44) 0 28%, transparent 28% 100%),
-        linear-gradient(180deg, #fffbf4, #fff1e7);
-      box-shadow: 0 30px 90px rgba(62, 76, 72, .28);
-      text-align: center;
-    }
-
-    .welcome-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      z-index: 2;
-      display: grid;
-      place-items: center;
-      width: 38px;
-      height: 38px;
-      border: 1px solid rgba(70, 92, 87, .16);
-      border-radius: 50%;
-      background: rgba(255, 255, 255, .82);
-      color: #463b37;
-      box-shadow: 0 8px 18px rgba(76, 112, 105, .14);
-    }
-
-    .welcome-close svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .welcome-visual {
-      position: relative;
-      display: grid;
-      place-items: end center;
-      min-height: clamp(250px, 48vh, 390px);
-      padding: 26px 20px 0;
-      background:
-        var(--welcome-bg, linear-gradient(135deg, rgba(191, 232, 223, .68), rgba(255, 246, 239, .92))),
-        radial-gradient(circle at 18% 16%, rgba(247, 167, 182, .42), transparent 40%),
-        radial-gradient(circle at 84% 12%, rgba(255, 240, 107, .35), transparent 34%);
-    }
-
-    .welcome-visual::after {
-      content: "";
-      position: absolute;
-      left: 10%;
-      right: 10%;
-      bottom: -18px;
-      height: 54px;
-      border-radius: 50%;
-      background: rgba(111, 139, 132, .16);
-      filter: blur(12px);
-    }
-
-    .welcome-mascot {
-      position: relative;
-      z-index: 1;
-      display: block;
-      width: min(86%, 360px);
-      max-height: 360px;
-      object-fit: contain;
-      filter: drop-shadow(0 18px 24px rgba(64, 88, 84, .22));
-    }
-
-    .welcome-content {
-      position: relative;
-      z-index: 1;
-      padding: 28px clamp(20px, 6vw, 42px) 34px;
-    }
-
-    .welcome-title {
-      margin: 0;
-      color: #3b312e;
-      font-size: clamp(28px, 7vw, 42px);
-      line-height: 1.04;
-      letter-spacing: 0;
-    }
-
-    .welcome-title span {
-      color: transparent;
-      background: linear-gradient(90deg, #6bbfb3, #f19aaa, #d6bd31, #70bfe2);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-
-    .welcome-action-box {
-      margin-top: 22px;
-      padding: 8px;
-      border: 1px solid rgba(70, 92, 87, .12);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, .74);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 12px 28px rgba(76, 112, 105, .12);
-    }
-
-    .welcome-enter {
-      width: 100%;
-      min-height: 54px;
-      border: 0;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #bfe8df, #f7a7b6 42%, #fff06b);
-      color: #2c2524;
-      font-size: 18px;
-      font-weight: 900;
-      box-shadow: 0 12px 22px rgba(247, 167, 182, .28);
-    }
-
-    @media (max-width: 920px) {
-      .grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 760px) {
-      .topbar {
-        align-items: flex-start;
-      }
-
-      .hero {
-        grid-template-columns: 1fr;
-        min-height: 0;
-      }
-
-      .hero-copy {
-        padding-bottom: 0;
-      }
-
-      h1 {
-        max-width: 9ch;
-      }
-
-      .hero-media {
-        min-height: 210px;
-      }
-
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .dialog-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .dialog .product-art {
-        min-height: 230px;
-      }
-
-      .welcome-card {
-        border-radius: 14px;
-      }
-
-      .welcome-visual {
-        min-height: 240px;
-      }
-    }
-
-    @media (max-width: 420px) {
-      .app {
-        padding-inline: 12px;
-      }
-
-      .lang button {
-        min-width: 42px;
-        padding-inline: 9px;
-      }
-
-      .grid {
-        gap: 10px;
-      }
-
-      .product-body {
-        min-height: 126px;
-        padding: 10px;
-      }
-
-      .product-title {
-        font-size: 14px;
-      }
-
-      .price {
-        font-size: 15px;
-      }
+    @media print {
+      body { background: #fff; }
+      .no-print { display: none !important; }
+      .print-area { display: block !important; }
     }
   </style>
 </head>
-<body>
-  <main class="app">
-    <header class="topbar" aria-label="macaronplayground">
-      <nav class="lang" aria-label="Language">
-        <button type="button" data-lang="tr" aria-pressed="true">TR</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-      </nav>
-    </header>
+<body class="min-h-screen overflow-x-hidden text-ink">
+  <div id="root"></div>
+  <div id="print-root" class="print-area hidden"></div>
 
-    <section class="hero">
-      <div class="hero-copy">
-        <h1 data-i18n="heroTitle">Menü</h1>
-        <p class="lead" data-i18n="heroLead">Macaron dünyasında kahvaltı, tatlı, kahve ve atıştırmalıklar.</p>
-      </div>
-      <div class="hero-media" aria-hidden="true">
-        <img src="assets/macaron-logo.png" alt="">
-      </div>
-    </section>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./menuData.js"></script>
+  <script type="text/babel">
+    const { useEffect, useMemo, useState } = React;
 
-    <section class="controls" aria-label="Menu controls">
-      <label class="search">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="m20 20-3.5-3.5"></path>
-        </svg>
-        <input id="search" type="search" autocomplete="off">
-      </label>
-      <div class="tabs" id="tabs" role="tablist"></div>
-    </section>
+    const STORAGE_KEY = "macaron-playground-adisyon-v2";
+    const categoryMap = Object.fromEntries(window.menuCategories.map((category) => [category.id, category]));
+    function uid(prefix) {
+      return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
 
-    <section class="section-title" aria-live="polite">
-      <h2 id="categoryTitle">Tümü</h2>
-      <p id="countText"></p>
-    </section>
+    function money(value) {
+      return new Intl.NumberFormat("tr-TR", {
+        style: "currency",
+        currency: "TRY",
+        maximumFractionDigits: 0
+      }).format(value || 0);
+    }
 
-    <section class="grid" id="productGrid" aria-label="Menu items"></section>
-  </main>
+    function dateTime(value) {
+      return new Intl.DateTimeFormat("tr-TR", {
+        dateStyle: "short",
+        timeStyle: "short"
+      }).format(new Date(value));
+    }
 
-  <section class="welcome" id="welcomePopup" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
-    <article class="welcome-card" style="--welcome-bg: linear-gradient(135deg, rgba(191, 232, 223, .72), rgba(255, 246, 239, .94));">
-      <button class="welcome-close" type="button" id="welcomeClose" aria-label="Kapat">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6 6 18"></path>
-          <path d="m6 6 12 12"></path>
-        </svg>
-      </button>
-      <div class="welcome-visual">
-        <img class="welcome-mascot" src="assets/welcome-mascot.png" alt="Macaron Playground maskotu">
-      </div>
-      <div class="welcome-content">
-        <h2 class="welcome-title" id="welcomeTitle"><span>Macaron Playground'a</span> Hoş Geldiniz</h2>
-        <div class="welcome-action-box">
-          <button class="welcome-enter" type="button" id="welcomeEnter">Menüye Bak</button>
-        </div>
-      </div>
-    </article>
-  </section>
+    function orderTotal(order) {
+      return order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
 
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <article class="dialog">
-      <div class="dialog-grid">
-        <div class="product-art" id="modalArt"></div>
-        <div class="dialog-content">
-          <div class="dialog-top">
-            <h3 id="modalTitle"></h3>
-            <button class="close" type="button" id="closeModal" aria-label="Close">
-              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6 6 18"></path>
-                <path d="m6 6 12 12"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="dialog-price" id="modalPrice"></div>
-          <p id="modalDescription"></p>
-          <div class="chips" id="modalChips"></div>
-        </div>
-      </div>
-    </article>
-  </div>
+    function itemCount(order) {
+      return order.items.reduce((sum, item) => sum + item.quantity, 0);
+    }
 
-  <script>
-    const translations = {
-      tr: {
-        heroTitle: "Menü",
-        heroLead: "Macaron dünyasında kahvaltı, tatlı, kahve ve atıştırmalıklar.",
-        search: "Menüde ara",
-        all: "Tümü",
-        itemCount: count => `${count} ürün`,
-        category: "Kategori",
-        price: "Fiyat",
-        detail: "Detay",
-        defaultDetail: item => `${item.name.tr} macaronplayground menüsünde ${item.category.tr.toLowerCase()} kategorisinde yer alır.`
-      },
-      en: {
-        heroTitle: "Menu",
-        heroLead: "Breakfast, desserts, coffee and bites in a soft macaron-colored world.",
-        search: "Search menu",
-        all: "All",
-        itemCount: count => `${count} items`,
-        category: "Category",
-        price: "Price",
-        detail: "Detail",
-        defaultDetail: item => `${item.name.en} is listed under ${item.category.en.toLowerCase()} on the macaronplayground menu.`
+    function personTotal(order, personId) {
+      return order.items
+        .filter((item) => item.personId === personId)
+        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
+
+    function paidTotal(order) {
+      if (!order?.isGroup) return 0;
+      const paidPeople = new Set(order.paidPeople || []);
+      return (order.people || []).reduce((sum, person) => {
+        return paidPeople.has(person.id) ? sum + personTotal(order, person.id) : sum;
+      }, 0);
+    }
+
+    function remainingTotal(order) {
+      return Math.max(0, orderTotal(order) - paidTotal(order));
+    }
+
+    function readStore() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return {
+          openTables: Array.isArray(saved?.openTables) ? saved.openTables : [],
+          closedTables: Array.isArray(saved?.closedTables) ? saved.closedTables : []
+        };
+      } catch {
+        return { openTables: [], closedTables: [] };
       }
-    };
+    }
 
-    const categories = [
-      { id: "all", tr: "Tümü", en: "All" },
-      { id: "breakfast", tr: "Kahvaltılar", en: "Breakfast" },
-      { id: "toast", tr: "Tostlar", en: "Toasts" },
-      { id: "sandwich", tr: "Sandviçler", en: "Sandwiches" },
-      { id: "food", tr: "Yiyecekler", en: "Food" },
-      { id: "dessert", tr: "Tatlılar", en: "Desserts" },
-      { id: "icecream", tr: "Dondurma", en: "Ice Cream" },
-      { id: "coffee", tr: "Kahveler", en: "Coffee" },
-      { id: "tea", tr: "Çaylar", en: "Tea" },
-      { id: "colddrinks", tr: "Soğuk İçecekler", en: "Cold Drinks" }
-    ];
+    function StatBox({ label, value, tone = "bg-paper", onClick, hint = "" }) {
+      const Component = onClick ? "button" : "div";
+      return (
+        <Component onClick={onClick} className={`${tone} rounded-lg border border-black/10 p-4 text-left shadow-sm ${onClick ? "transition active:scale-[.99]" : ""}`}>
+          <div className="text-sm font-bold text-stone-500">{label}</div>
+          <div className="mt-1 text-2xl font-black tracking-normal">{value}</div>
+          {hint && <div className="mt-2 text-xs font-black text-stone-500">{hint}</div>}
+        </Component>
+      );
+    }
 
-    const categoryMap = new Map(categories.map(category => [category.id, category]));
+    function EmptyState({ title, body }) {
+      return (
+        <div className="rounded-lg border border-dashed border-black/15 bg-white/55 p-6 text-center">
+          <h3 className="text-xl font-black">{title}</h3>
+          <p className="mt-2 text-sm font-bold text-stone-500">{body}</p>
+        </div>
+      );
+    }
 
-    const palettes = [
-      "linear-gradient(135deg, #f7a7b6, #fff06b)",
-      "linear-gradient(135deg, #bfe8df, #fff6ef)",
-      "linear-gradient(135deg, #82c9ec, #f7a7b6)",
-      "linear-gradient(135deg, #fff06b, #bfe8df)",
-      "linear-gradient(135deg, #fff6ef, #82c9ec)"
-    ];
+    function App() {
+      const initial = useMemo(readStore, []);
+      const [openTables, setOpenTables] = useState(initial.openTables);
+      const [closedTables, setClosedTables] = useState(initial.closedTables);
+      const [screen, setScreen] = useState("home");
+      const [activeTableId, setActiveTableId] = useState(null);
+      const [closingTableId, setClosingTableId] = useState(null);
+      const [selectedClosedId, setSelectedClosedId] = useState(null);
+      const [category, setCategory] = useState("all");
+      const [tableName, setTableName] = useState("");
+      const [groupTableName, setGroupTableName] = useState("");
+      const [firstPersonName, setFirstPersonName] = useState("");
+      const [activePersonId, setActivePersonId] = useState(null);
+      const [toast, setToast] = useState("");
+      const [pendingProduct, setPendingProduct] = useState(null);
+      const [summaryUnlocked, setSummaryUnlocked] = useState(false);
+      const [summaryPassword, setSummaryPassword] = useState("");
+      const [summaryError, setSummaryError] = useState("");
 
-    const items = [
-      item("breakfast", "Kahvaltı Tabağı", "Breakfast Plate", 450, "1 bardak çay ile servis edilir.", "Served with one glass of Turkish tea.", "B", "assets/kahvalti-tabagi.png"),
-      item("breakfast", "Serpme Kahvaltı 2 Kişilik", "Mixed Breakfast for Two", 1200, "Rezervasyon gereklidir.", "Reservation required.", "B", "assets/serpme-kahvalti.png"),
-      item("toast", "Kaşarlı Tost", "Kashar Cheese Toast", 280, "Sıcak ve çıtır tost.", "Warm, crisp toast.", "T", "assets/kasarli-tost.png"),
-      item("toast", "Beyaz Peynirli, Domatesli, Kekikli Tost", "White Cheese, Tomato and Thyme Toast", 280, "Beyaz peynir, domates ve kekik.", "White cheese, tomato and thyme.", "T", "assets/beyaz-peynirli-domatesli-kekikli-tost.png"),
-      item("toast", "Karışık Tost", "Mixed Toast", 300, "Klasik karışık tost.", "Classic mixed toast.", "T", "assets/karisik-tost.png"),
-      item("sandwich", "Peynirli Sandviç", "Cheese Sandwich", 280, "Peynirli sandviç.", "Cheese sandwich.", "S", "assets/peynirli-sandvic.png"),
-      item("sandwich", "Hindi Fümeli Sandviç", "Smoked Turkey Sandwich", 300, "Hindi füme ile hazırlanır.", "Prepared with smoked turkey.", "S", "assets/hindi-fumeli-sandvic.png"),
-      item("food", "Günün Çorbası", "Soup of the Day", 185, "Ev yapımıdır.", "Homemade.", "Ç", "assets/gunun-corbasi.png"),
-      item("food", "Patates Kızartması", "French Fries", 200, "Çıtır patates kızartması.", "Crispy fries.", "F", "assets/patates-kizartmasi.png"),
-      item("food", "Köfte", "Meatballs", 550, "Patates kızartması ile servis edilir.", "Served with french fries.", "K", "assets/kofte.png"),
-      item("food", "Çocuk Köfte", "Kids Meatballs", 425, "Patates kızartması ile servis edilir.", "Served with french fries.", "K", "assets/cocuk-kofte.png"),
-      item("food", "Hamburger", "Hamburger", 475, "Patates kızartması ile servis edilir.", "Served with french fries.", "H", "assets/hamburger.png"),
-      item("food", "Soğan Halkası", "Onion Rings", 225, "Sıcak atıştırmalık.", "Warm snack.", "O", "assets/sogan-halkasi.png"),
-      item("food", "Makarna (Tereyağlı)", "Pasta with Butter", 350, "Tereyağlı makarna.", "Pasta with butter.", "M", "assets/tereyagli-makarna.png"),
-      item("food", "Makarna (Pestolu)", "Pesto Pasta", 400, "Pesto soslu makarna.", "Pasta with pesto sauce.", "M", "assets/pestolu-makarna.png"),
-      item("food", "Sıcak Sepet", "Hot Basket", 400, "Paylaşmalık sıcak sepet.", "Shareable hot basket.", "S", "assets/sicak-sepet.png"),
-      item("food", "Omlet", "Omelette", 200, "Klasik omlet.", "Classic omelette.", "O", "assets/omlet.png"),
-      item("food", "Kaşarlı Omlet", "Kashar Cheese Omelette", 250, "Kaşarlı omlet.", "Omelette with kashar cheese.", "O", "assets/kasarli-omlet.png"),
-      item("dessert", "Waffle", "Waffle", 450, "Tatlı menüsünden waffle.", "Waffle from the dessert menu.", "W", "assets/waffle.png"),
-      item("dessert", "Vişneli Mozaik Pasta", "Sour Cherry Mosaic Cake", 330, "Vişneli mozaik pasta.", "Sour cherry mosaic cake.", "P", "assets/visneli-mozaik-pasta.png"),
-      item("dessert", "Eliminasyon Keki", "Elimination Cake", 350, "Menüdeki özel kek.", "Special cake from the menu.", "K", "assets/eliminasyon-keki.png"),
-      item("dessert", "Kurabiye (Porsiyon)", "Cookie Portion", 180, "Porsiyon kurabiye.", "Cookie portion.", "C", "assets/kurabiye-porsiyon.png"),
-      item("dessert", "Frambuazlı Cheesecake", "Raspberry Cheesecake", 360, "Frambuazlı cheesecake.", "Raspberry cheesecake.", "C", "assets/frambuazli-cheesecake.png"),
-      item("dessert", "Yaban Mersinli Cheesecake", "Blueberry Cheesecake", 360, "Yaban mersinli cheesecake.", "Blueberry cheesecake.", "C", "assets/yaban-mersinli-cheesecake.png"),
-      item("dessert", "Lotuslu Cheesecake", "Lotus Cheesecake", 360, "Lotuslu cheesecake.", "Lotus cheesecake.", "C", "assets/lotuslu-cheesecake.png"),
-      item("dessert", "Macaron", "Macaron", 50, "Adet macaron.", "Single macaron.", "M", "assets/macaron-urun.png"),
-      item("dessert", "Glutensiz Browni", "Gluten-Free Brownie", 280, "Glutensiz browni.", "Gluten-free brownie.", "B", "assets/glutensiz-browni.png"),
-      item("dessert", "Sufle", "Souffle", 275, "Sıcak sufle.", "Warm souffle.", "S", "assets/sufle.png"),
-      item("icecream", "Çilekli (Top)", "Strawberry Scoop", 75, "Top dondurma.", "Ice cream scoop.", "D", "assets/cilekli-dondurma.png"),
-      item("icecream", "Çikolatalı (Top)", "Chocolate Scoop", 75, "Top dondurma.", "Ice cream scoop.", "D", "assets/cikolatali-dondurma.png"),
-      item("coffee", "Americano", "Americano", 160, "Kahveler menüsünden.", "From the coffee menu.", "A", "assets/americano.png"),
-      item("coffee", "Ice Americano", "Iced Americano", 170, "Soğuk kahve.", "Iced coffee.", "A", "assets/ice-americano.png"),
-      item("coffee", "Espresso", "Espresso", 100, "Kısa ve yoğun kahve.", "Short and intense coffee.", "E", "assets/espresso.png"),
-      item("coffee", "Double Espresso", "Double Espresso", 130, "Çift shot espresso.", "Double shot espresso.", "E", "assets/double-espresso.png"),
-      item("coffee", "Latte", "Latte", 180, "Sütlü kahve.", "Coffee with milk.", "L", "assets/latte.png"),
-      item("coffee", "Ice Latte", "Iced Latte", 200, "Soğuk sütlü kahve.", "Iced coffee with milk.", "L", "assets/ice-latte.png"),
-      item("coffee", "Flat White", "Flat White", 180, "Sütlü espresso bazlı kahve.", "Milk-based espresso drink.", "F", "assets/flat-white.png"),
-      item("coffee", "Ice Flat White", "Iced Flat White", 200, "Soğuk flat white.", "Iced flat white.", "F", "assets/ice-flat-white.png"),
-      item("coffee", "Cappuccino", "Cappuccino", 180, "Espresso, süt ve köpük.", "Espresso, milk and foam.", "C", "assets/cappuccino.png"),
-      item("coffee", "Filtre Kahve", "Filter Coffee", 160, "Sıcak filtre kahve.", "Hot filter coffee.", "F", "assets/filtre-kahve.png"),
-      item("coffee", "Ice Filtre Kahve", "Iced Filter Coffee", 180, "Soğuk filtre kahve.", "Iced filter coffee.", "F", "assets/ice-filtre-kahve.png"),
-      item("coffee", "Sütlü Filtre Kahve", "Filter Coffee with Milk", 180, "Sütlü filtre kahve.", "Filter coffee with milk.", "F", "assets/sutlu-filtre-kahve.png"),
-      item("coffee", "Vanilyalı Filtre Kahve", "Vanilla Filter Coffee", 190, "Vanilyalı filtre kahve.", "Vanilla filter coffee.", "V", "assets/vanilyali-filtre-kahve.png"),
-      item("coffee", "Türk Kahvesi", "Turkish Coffee", 120, "Geleneksel Türk kahvesi.", "Traditional Turkish coffee.", "T", "assets/turk-kahvesi.png"),
-      item("coffee", "Double Türk Kahvesi", "Double Turkish Coffee", 150, "Double Türk kahvesi.", "Double Turkish coffee.", "T", "assets/double-turk-kahvesi.png"),
-      item("coffee", "Dibek Kahvesi", "Dibek Coffee", 130, "Dibek kahvesi.", "Dibek coffee.", "D", "assets/dibek-kahvesi.png"),
-      item("coffee", "Sıcak Çikolata", "Hot Chocolate", 195, "Sıcak çikolata.", "Hot chocolate.", "Ç", "assets/sicak-cikolata.png"),
-      item("tea", "Çay", "Turkish Tea", 60, "Bardak çay.", "Glass of Turkish tea.", "Ç", "assets/cay.png"),
-      item("tea", "Çay (Fincan)", "Tea Cup", 80, "Fincan çay.", "Cup of tea.", "Ç", "assets/cay-fincan.png"),
-      item("tea", "Bitki Çayı", "Herbal Tea", 175, "Bitki çayı.", "Herbal tea.", "B", "assets/bitki-cayi.png"),
-      item("tea", "Yeşil Çay", "Green Tea", 175, "Yeşil çay.", "Green tea.", "Y", "assets/yesil-cay.png"),
-      item("colddrinks", "Limonata", "Lemonade", 180, "Soğuk limonata.", "Cold lemonade.", "L"),
-      item("colddrinks", "Portakal Suyu", "Orange Juice", 190, "Portakal suyu.", "Orange juice.", "P"),
-      item("colddrinks", "Milkshake (Günün Meyvesi)", "Milkshake (Fruit of the Day)", 220, "Günün meyvesi ile hazırlanır.", "Prepared with the fruit of the day.", "M"),
-      item("colddrinks", "Su", "Water", 40, "Şişe su.", "Bottled water.", "S"),
-      item("colddrinks", "Sade Soda", "Plain Mineral Water", 65, "Sade soda.", "Plain mineral water.", "S"),
-      item("colddrinks", "Meyveli Soda", "Fruit Mineral Water", 75, "Meyveli soda.", "Fruit mineral water.", "M"),
-      item("colddrinks", "Churchill", "Churchill", 100, "Limonlu sodalı soğuk içecek.", "Cold sparkling lemon drink.", "C"),
-      item("colddrinks", "Cola", "Cola", 95, "Soğuk içecek.", "Cold drink.", "C"),
-      item("colddrinks", "Fanta", "Fanta", 95, "Soğuk içecek.", "Cold drink.", "F"),
-      item("colddrinks", "Ice Tea", "Iced Tea", 90, "Soğuk çay.", "Iced tea.", "I"),
-      item("colddrinks", "Ayran", "Ayran", 50, "Soğuk ayran.", "Cold ayran.", "A"),
-      item("colddrinks", "Capri Sun", "Capri Sun", 75, "Meyveli içecek.", "Fruit drink.", "C")
-    ].map((entry, index) => ({
-      ...entry,
-      id: `${entry.categoryId}-${index}`,
-      palette: palettes[index % palettes.length],
-      category: categoryMap.get(entry.categoryId)
-    }));
+      const activeTable = openTables.find((table) => table.id === activeTableId);
+      const closingTable = openTables.find((table) => table.id === closingTableId);
+      const selectedClosed = closedTables.find((table) => table.id === selectedClosedId);
 
-    let currentLang = "tr";
-    let currentCategory = "all";
-    const productGrid = document.querySelector("#productGrid");
-    const tabs = document.querySelector("#tabs");
-    const search = document.querySelector("#search");
-    const categoryTitle = document.querySelector("#categoryTitle");
-    const countText = document.querySelector("#countText");
-    const modal = document.querySelector("#modal");
-    const modalArt = document.querySelector("#modalArt");
-    const modalTitle = document.querySelector("#modalTitle");
-    const modalPrice = document.querySelector("#modalPrice");
-    const modalDescription = document.querySelector("#modalDescription");
-    const modalChips = document.querySelector("#modalChips");
-    const closeModal = document.querySelector("#closeModal");
-    const welcomePopup = document.querySelector("#welcomePopup");
-    const welcomeEnter = document.querySelector("#welcomeEnter");
-    const welcomeClose = document.querySelector("#welcomeClose");
+      useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ openTables, closedTables }));
+      }, [openTables, closedTables]);
 
-    function item(categoryId, tr, en, price, descTr, descEn, icon, image = "") {
+      useEffect(() => {
+        if (!toast) return;
+        const timer = setTimeout(() => setToast(""), 1400);
+        return () => clearTimeout(timer);
+      }, [toast]);
+
+      function goHome() {
+        setScreen("home");
+        setActiveTableId(null);
+        setClosingTableId(null);
+        setSelectedClosedId(null);
+        setSummaryUnlocked(false);
+        setSummaryPassword("");
+        setSummaryError("");
+      }
+
+      function openSummary() {
+        setSummaryUnlocked(false);
+        setSummaryPassword("");
+        setSummaryError("");
+        setScreen("summary");
+      }
+
+      function unlockSummary(event) {
+        event.preventDefault();
+        if (summaryPassword === "1425") {
+          setSummaryUnlocked(true);
+          setSummaryPassword("");
+          setSummaryError("");
+          return;
+        }
+        setSummaryError("Şifre hatalı");
+      }
+
+      function createTable(event) {
+        event.preventDefault();
+        const name = tableName.trim();
+        if (!name) return;
+        const table = { id: uid("table"), name, openedAt: new Date().toISOString(), items: [] };
+        setOpenTables((tables) => [table, ...tables]);
+        setTableName("");
+        setActiveTableId(table.id);
+        setScreen("table");
+      }
+
+      function createGroupTable(event) {
+        event.preventDefault();
+        const name = groupTableName.trim();
+        const firstName = firstPersonName.trim();
+        if (!name || !firstName) return;
+        const person = { id: uid("person"), name: firstName };
+        const table = {
+          id: uid("table"),
+          name,
+          openedAt: new Date().toISOString(),
+          isGroup: true,
+          people: [person],
+          paidPeople: [],
+          items: []
+        };
+        setOpenTables((tables) => [table, ...tables]);
+        setGroupTableName("");
+        setFirstPersonName("");
+        setActiveTableId(table.id);
+        setActivePersonId(person.id);
+        setScreen("table");
+      }
+
+      function updateActiveTable(updater) {
+        setOpenTables((tables) => tables.map((table) => {
+          if (table.id !== activeTableId) return table;
+          return updater(table);
+        }));
+      }
+
+      function updateTableById(tableId, updater) {
+        setOpenTables((tables) => tables.map((table) => {
+          if (table.id !== tableId) return table;
+          return updater(table);
+        }));
+      }
+
+      function addPersonToActiveTable(name) {
+        const cleanName = name.trim();
+        if (!cleanName || !activeTable?.isGroup) return;
+        const person = { id: uid("person"), name: cleanName };
+        updateActiveTable((table) => ({
+          ...table,
+          people: [...(table.people || []), person]
+        }));
+        setActivePersonId(person.id);
+      }
+
+      function requestProduct(product) {
+        setPendingProduct(product);
+      }
+
+      function addProduct(product) {
+        updateActiveTable((table) => {
+          const activePerson = table.isGroup
+            ? (table.people || []).find((person) => person.id === activePersonId)
+            : null;
+          if (table.isGroup && !activePerson) return table;
+          const found = table.items.find((item) =>
+            item.menuId === product.id && (!table.isGroup || item.personId === activePerson.id)
+          );
+          const categoryName = categoryMap[product.categoryId]?.name || "Menü";
+          if (found) {
+            return {
+              ...table,
+              items: table.items.map((item) => item.id === found.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item)
+            };
+          }
+          return {
+            ...table,
+            items: [
+              ...table.items,
+              {
+                id: uid("line"),
+                menuId: product.id,
+                name: product.name,
+                categoryId: product.categoryId,
+                categoryName,
+                price: product.price,
+                quantity: 1,
+                lactoseFree: false,
+                personId: activePerson?.id || null,
+                personName: activePerson?.name || ""
+              }
+            ]
+          };
+        });
+        setPendingProduct(null);
+        const activePerson = activeTable?.isGroup
+          ? (activeTable.people || []).find((person) => person.id === activePersonId)
+          : null;
+        setToast(activePerson ? `${product.name} ${activePerson.name} için eklendi` : `${product.name} eklendi`);
+      }
+
+      function changeQuantity(lineId, delta) {
+        updateActiveTable((table) => ({
+          ...table,
+          items: table.items
+            .map((item) => item.id === lineId ? { ...item, quantity: item.quantity + delta } : item)
+            .filter((item) => item.quantity > 0)
+        }));
+      }
+
+      function removeLine(lineId) {
+        updateActiveTable((table) => ({
+          ...table,
+          items: table.items.filter((item) => item.id !== lineId)
+        }));
+      }
+
+      function toggleLactoseFree(lineId) {
+        updateActiveTable((table) => ({
+          ...table,
+          items: table.items.map((item) => item.id === lineId ? { ...item, lactoseFree: !item.lactoseFree } : item)
+        }));
+      }
+
+      function closeTable() {
+        if (!closingTable || !closingTable.items.length) return;
+        const total = orderTotal(closingTable);
+        const closed = {
+          ...closingTable,
+          closedAt: new Date().toISOString(),
+          total,
+          soldCount: itemCount(closingTable)
+        };
+        setClosedTables((tables) => [closed, ...tables]);
+        setOpenTables((tables) => tables.filter((table) => table.id !== closingTable.id));
+        setClosingTableId(null);
+        setActiveTableId(null);
+        setScreen("closed");
+      }
+
+      function confirmCloseTable() {
+        closeTable();
+      }
+
+      function markPersonPaid(personId) {
+        if (!closingTable?.isGroup) return;
+        updateTableById(closingTable.id, (table) => ({
+          ...table,
+          paidPeople: Array.from(new Set([...(table.paidPeople || []), personId]))
+        }));
+      }
+
+      function deleteClosed(id) {
+        if (!confirm("Bu kapanmış adisyon silinsin mi?")) return;
+        setClosedTables((tables) => tables.filter((table) => table.id !== id));
+        if (selectedClosedId === id) setSelectedClosedId(null);
+      }
+
+      function printReceipt(order) {
+        const html = receiptMarkup(order);
+        ReactDOM.createRoot(document.getElementById("print-root")).render(
+          <div dangerouslySetInnerHTML={{ __html: html }} />
+        );
+        setTimeout(() => window.print(), 80);
+      }
+
+      const visibleProducts = window.menuItems.filter((item) => category === "all" || item.categoryId === category);
+      const daySummary = useMemo(() => buildDaySummary(closedTables), [closedTables]);
+
+      return (
+        <main className="no-print mx-auto flex min-h-screen w-full max-w-7xl flex-col px-2 py-2 sm:px-5 sm:py-4 lg:px-8">
+          {toast && (
+            <div className="fixed left-3 right-3 top-3 z-50 mx-auto max-w-sm rounded-lg border border-black/10 bg-ink px-4 py-3 text-center text-sm font-black text-white shadow-soft">
+              {toast}
+            </div>
+          )}
+
+          <header className="mb-3 flex flex-col gap-2 rounded-lg border border-white/70 bg-white/55 p-2 shadow-soft backdrop-blur sm:mb-4 sm:gap-3 sm:p-4 md:flex-row md:items-center md:justify-between">
+            <button type="button" onClick={goHome} className="min-w-0 text-left">
+              <p className="text-xs font-black uppercase tracking-normal text-stone-500 sm:text-sm">Adisyon</p>
+              <h1 className="text-xl font-black tracking-normal sm:text-4xl">Macaron Playground</h1>
+            </button>
+            <div className="grid w-full grid-cols-2 gap-2 md:w-auto md:grid-cols-5">
+              <TopButton active={screen === "new"} onClick={() => setScreen("new")}>Yeni Masa Aç</TopButton>
+              <TopButton active={screen === "groupNew"} onClick={() => setScreen("groupNew")}>Grup Masası Aç</TopButton>
+              <TopButton active={screen === "open"} onClick={() => setScreen("open")}>Açık Masalar</TopButton>
+              <TopButton active={screen === "closed"} onClick={() => setScreen("closed")}>Kapanmış Masalar</TopButton>
+              <TopButton active={screen === "summary"} onClick={openSummary}>Gün Sonu</TopButton>
+            </div>
+          </header>
+
+          {screen === "home" && (
+            <section className="grid flex-1 content-start gap-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
+                <HomeAction tone="bg-mint" title="Yeni Masa Aç" detail="Yeni bir açık adisyon başlat" onClick={() => setScreen("new")} />
+                <HomeAction tone="bg-peach" title="Grup Masası Aç" detail="Kişi kişi hesap takip et" onClick={() => setScreen("groupNew")} />
+                <HomeAction tone="bg-rose" title="Açık Masalar" detail={`${openTables.length} açık masa`} onClick={() => setScreen("open")} />
+                <HomeAction tone="bg-sky" title="Kapanmış Masalar" detail={`${closedTables.length} kayıt`} onClick={() => setScreen("closed")} />
+              </div>
+            </section>
+          )}
+
+          {screen === "new" && (
+            <section className="mx-auto grid w-full max-w-xl gap-4 rounded-lg border border-white/70 bg-paper/90 p-5 shadow-soft">
+              <h2 className="text-2xl font-black">Yeni Masa Aç</h2>
+              <form onSubmit={createTable} className="grid gap-3">
+                <label className="grid gap-2 text-sm font-black text-stone-600">
+                  Masa adı
+                  <input
+                    value={tableName}
+                    onChange={(event) => setTableName(event.target.value)}
+                    autoFocus
+                    className="h-14 rounded-lg border border-black/10 bg-white px-4 text-xl font-black outline-none focus:ring-4 focus:ring-rose/35"
+                    placeholder="Örn. Bahçe 4"
+                  />
+                </label>
+                <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Masa Oluştur</button>
+              </form>
+            </section>
+          )}
+
+          {screen === "groupNew" && (
+            <section className="mx-auto grid w-full max-w-xl gap-4 rounded-lg border border-white/70 bg-paper/90 p-5 shadow-soft">
+              <h2 className="text-2xl font-black">Grup Masası Aç</h2>
+              <form onSubmit={createGroupTable} className="grid gap-3">
+                <label className="grid gap-2 text-sm font-black text-stone-600">
+                  Masa adı
+                  <input
+                    value={groupTableName}
+                    onChange={(event) => setGroupTableName(event.target.value)}
+                    className="h-14 rounded-lg border border-black/10 bg-white px-4 text-xl font-black outline-none focus:ring-4 focus:ring-rose/35"
+                    placeholder="Örn. Grup 1"
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-black text-stone-600">
+                  İlk kişi
+                  <input
+                    value={firstPersonName}
+                    onChange={(event) => setFirstPersonName(event.target.value)}
+                    className="h-14 rounded-lg border border-black/10 bg-white px-4 text-xl font-black outline-none focus:ring-4 focus:ring-sky/35"
+                    placeholder="Örn. Ayşe"
+                  />
+                </label>
+                <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Grup Masası Oluştur</button>
+              </form>
+            </section>
+          )}
+
+          {screen === "open" && (
+            <TableList
+              tables={openTables}
+              onHome={goHome}
+              onOpen={(id) => {
+                const table = openTables.find((entry) => entry.id === id);
+                setActivePersonId(table?.isGroup ? table.people?.[0]?.id || null : null);
+                setActiveTableId(id);
+                setScreen("table");
+              }}
+              onClose={(id) => { setActiveTableId(id); setClosingTableId(id); setScreen("close"); }}
+            />
+          )}
+
+          {screen === "table" && activeTable && (
+            <ActiveTable
+              table={activeTable}
+              category={category}
+              setCategory={setCategory}
+              products={visibleProducts}
+              requestProduct={requestProduct}
+              changeQuantity={changeQuantity}
+              removeLine={removeLine}
+              toggleLactoseFree={toggleLactoseFree}
+              activePersonId={activePersonId}
+              setActivePersonId={setActivePersonId}
+              addPerson={addPersonToActiveTable}
+              finishOrder={() => setScreen("open")}
+            />
+          )}
+
+          {pendingProduct && (
+            <ProductConfirm
+              product={pendingProduct}
+              person={activeTable?.isGroup ? (activeTable.people || []).find((item) => item.id === activePersonId) : null}
+              onCancel={() => setPendingProduct(null)}
+              onConfirm={() => addProduct(pendingProduct)}
+            />
+          )}
+
+          {screen === "close" && closingTable && (
+            <ClosePreview table={closingTable} onCancel={() => setScreen("table")} onPayPerson={markPersonPaid} onConfirm={confirmCloseTable} />
+          )}
+
+          {screen === "closed" && (
+            <ClosedTables
+              tables={closedTables}
+              selected={selectedClosed}
+              select={setSelectedClosedId}
+              onPrint={printReceipt}
+              onDelete={deleteClosed}
+              onHome={goHome}
+            />
+          )}
+
+          {screen === "summary" && (
+            summaryUnlocked
+              ? <DaySummary summary={daySummary} />
+              : (
+                <SummaryLock
+                  password={summaryPassword}
+                  setPassword={setSummaryPassword}
+                  error={summaryError}
+                  onSubmit={unlockSummary}
+                  onHome={goHome}
+                />
+              )
+          )}
+        </main>
+      );
+    }
+
+    function TopButton({ active, children, onClick }) {
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          className={`min-h-11 rounded-lg border px-2 py-2 text-center text-[12px] font-black leading-tight shadow-sm transition sm:min-h-12 sm:px-4 sm:text-sm ${active ? "border-ink bg-ink text-white" : "border-black/10 bg-white/75 text-ink"}`}
+        >
+          {children}
+        </button>
+      );
+    }
+
+    function HomeAction({ tone, title, detail, onClick }) {
+      return (
+        <button type="button" onClick={onClick} className={`${tone} min-h-24 rounded-lg border border-white/70 p-3 text-left shadow-soft transition hover:-translate-y-0.5 sm:min-h-36 sm:p-5`}>
+          <span className="block text-lg font-black leading-tight sm:text-2xl">{title}</span>
+          <span className="mt-2 block text-sm font-bold text-stone-700 sm:mt-3 sm:text-base">{detail}</span>
+        </button>
+      );
+    }
+
+    function ReturnHomeButton({ onClick }) {
+      return (
+        <button onClick={onClick} className="mt-3 min-h-12 w-full rounded-lg bg-ink px-4 font-black text-white shadow-soft">
+          Ana Ekrana Dön
+        </button>
+      );
+    }
+
+    function TableList({ tables, onOpen, onClose, onHome }) {
+      if (!tables.length) {
+        return (
+          <section className="mx-auto w-full max-w-md">
+            <EmptyState title="Açık masa yok" body="Yeni Masa Aç ekranından ilk adisyonu başlatabilirsiniz." />
+            <ReturnHomeButton onClick={onHome} />
+          </section>
+        );
+      }
+
+      return (
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {tables.map((table) => (
+            <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-2xl font-black">{table.name}</h2>
+                  <p className="mt-1 text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
+                </div>
+                <strong className="shrink-0 rounded-full bg-lemon px-2 py-1 text-sm">
+                  {table.isGroup ? `Kalan ${money(remainingTotal(table))}` : money(orderTotal(table))}
+                </strong>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <button onClick={() => onOpen(table.id)} className="h-12 rounded-lg bg-mint px-2 text-sm font-black sm:text-base">Adisyon Aç</button>
+                <button onClick={() => onClose(table.id)} disabled={!table.items.length} className="h-12 rounded-lg bg-rose px-2 text-sm font-black sm:text-base disabled:cursor-not-allowed disabled:opacity-45">Masayı Kapat</button>
+              </div>
+            </article>
+          ))}
+        </section>
+      );
+    }
+
+    function ProductConfirm({ product, person, onCancel, onConfirm }) {
+      return (
+        <div className="fixed inset-0 z-40 grid place-items-end bg-black/25 p-2 sm:place-items-center">
+          <section className="w-full max-w-sm rounded-lg border border-black/10 bg-paper p-4 shadow-soft">
+            <p className="text-sm font-black text-stone-500">Siparişe eklensin mi?</p>
+            <h2 className="mt-1 text-2xl font-black leading-tight">{product.name}</h2>
+            {person && (
+              <p className="mt-2 w-fit rounded-full bg-mint px-3 py-1 text-sm font-black">{person.name} hesabına</p>
+            )}
+            <p className="mt-2 text-xl font-black">{money(product.price)}</p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={onCancel} className="min-h-12 rounded-lg bg-white font-black">Vazgeç</button>
+              <button onClick={onConfirm} className="min-h-12 rounded-lg bg-ink font-black text-white">Siparişe Ekle</button>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    function ActiveTable({ table, category, setCategory, products, requestProduct, changeQuantity, removeLine, toggleLactoseFree, activePersonId, setActivePersonId, addPerson, finishOrder }) {
+      const [newPersonName, setNewPersonName] = useState("");
+      const orderedCategories = [
+        ...window.menuCategories.filter((item) => item.id !== "all"),
+        window.menuCategories.find((item) => item.id === "all")
+      ].filter(Boolean);
+      const people = table.people || [];
+      const activePerson = people.find((person) => person.id === activePersonId);
+
+      function submitPerson(event) {
+        event.preventDefault();
+        if (!newPersonName.trim()) return;
+        addPerson(newPersonName);
+        setNewPersonName("");
+      }
+
+      return (
+        <section className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-4">
+          <div className="order-2 grid min-w-0 content-start gap-2 lg:order-1 lg:gap-3">
+            <div className="sticky top-0 z-10 -mx-2 min-w-0 bg-mint/85 px-2 py-2 backdrop-blur sm:mx-0 sm:rounded-lg sm:px-3">
+              <div className="grid max-w-full grid-cols-3 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
+                {orderedCategories.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setCategory(item.id)}
+                    className={`min-h-9 rounded-lg border px-1.5 py-1 text-[11px] font-black leading-tight sm:min-h-11 sm:rounded-full sm:px-4 sm:text-sm ${category === item.id ? "border-ink bg-lemon" : "border-black/10 bg-white/75"}`}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="grid min-w-0 gap-2">
+              {products.map((product) => (
+                <button key={product.id} onClick={() => requestProduct(product)} className="min-h-14 rounded-lg border border-black/10 bg-paper px-3 py-3 text-left shadow-sm transition active:scale-[.99] sm:min-h-16 sm:px-4">
+                  <div className="flex min-w-0 items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="text-base font-black leading-tight sm:text-lg">{product.name}</h3>
+                    </div>
+                    <strong className="shrink-0 rounded-full bg-lemon px-3 py-1.5 text-sm font-black sm:py-2 sm:text-base">{money(product.price)}</strong>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <aside className="order-1 grid min-w-0 content-start gap-1.5 rounded-lg border border-black/10 bg-white/80 p-2 shadow-soft sm:gap-3 sm:p-3 lg:sticky lg:top-4 lg:order-2">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h2 className="text-lg font-black leading-tight sm:text-2xl">{table.name}</h2>
+                <p className="text-xs font-bold text-stone-500 sm:text-sm">{itemCount(table)} ürün</p>
+              </div>
+              <strong className="shrink-0 rounded-full bg-lemon px-2 py-1.5 text-sm font-black sm:px-3 sm:py-2 sm:text-lg">{money(orderTotal(table))}</strong>
+            </div>
+
+            {table.isGroup && (
+              <div className="grid gap-2 rounded-lg border border-black/10 bg-mint/35 p-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-black text-stone-600">Sipariş kime?</span>
+                  {activePerson && <strong className="rounded-full bg-white px-2 py-1 text-xs">{activePerson.name}</strong>}
+                </div>
+                <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                  {people.map((person) => (
+                    <button
+                      key={person.id}
+                      onClick={() => setActivePersonId(person.id)}
+                      className={`min-h-10 rounded-lg border px-2 text-sm font-black leading-tight ${activePersonId === person.id ? "border-ink bg-lemon" : "border-black/10 bg-white"}`}
+                    >
+                      {person.name}
+                    </button>
+                  ))}
+                </div>
+                <form onSubmit={submitPerson} className="grid grid-cols-[minmax(0,1fr)_86px] gap-1.5">
+                  <input
+                    value={newPersonName}
+                    onChange={(event) => setNewPersonName(event.target.value)}
+                    className="h-11 min-w-0 rounded-lg border border-black/10 bg-white px-3 text-sm font-black outline-none focus:ring-4 focus:ring-sky/30"
+                    placeholder="Yeni kişi"
+                  />
+                  <button className="h-11 rounded-lg bg-sky px-2 text-sm font-black">Ekle</button>
+                </form>
+              </div>
+            )}
+
+            {!table.items.length && <EmptyState title="Adisyon boş" body="Menüden ürüne basarak ekleyin." />}
+
+            <div className="grid max-h-44 gap-1.5 overflow-y-auto pr-1 sm:max-h-64 sm:gap-2 lg:max-h-none lg:overflow-visible lg:pr-0">
+              {table.items.map((line) => (
+                <article key={line.id} className="rounded-lg border border-black/10 bg-paper p-1.5 sm:p-2">
+                  <div className="flex min-w-0 items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <h3 className="min-w-0 truncate text-sm font-black leading-tight sm:text-base">{line.name}</h3>
+                        <span className="shrink-0 rounded-full bg-lemon px-2 py-0.5 text-xs font-black">x{line.quantity}</span>
+                      </div>
+                      <p className="mt-0.5 text-[11px] font-bold text-stone-500 sm:text-xs">{money(line.price)} / {money(line.price * line.quantity)}</p>
+                      {table.isGroup && line.personName && (
+                        <p className="mt-0.5 text-[11px] font-black text-sky">{line.personName}</p>
+                      )}
+                      {line.categoryId === "coffee" && (
+                        <label className="mt-1 flex w-fit items-center gap-1.5 rounded-full bg-white px-2 py-0.5 text-[11px] font-black sm:text-xs">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(line.lactoseFree)}
+                            onChange={() => toggleLactoseFree(line.id)}
+                          />
+                          Laktozsuz süt
+                        </label>
+                      )}
+                    </div>
+                    <div className="grid shrink-0 grid-cols-[28px_28px] gap-1">
+                      <button onClick={() => changeQuantity(line.id, -1)} className="h-8 rounded-lg bg-mint text-base font-black">-</button>
+                      <button onClick={() => changeQuantity(line.id, 1)} className="h-8 rounded-lg bg-mint text-base font-black">+</button>
+                      <button onClick={() => removeLine(line.id)} className="col-span-2 h-7 rounded-lg bg-rose text-[11px] font-black">Sil</button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <button onClick={finishOrder} className="min-h-11 rounded-lg bg-ink text-sm font-black text-white sm:h-14 sm:text-lg">Siparişi Bitir</button>
+          </aside>
+        </section>
+      );
+    }
+
+    function ClosePreview({ table, onCancel, onPayPerson, onConfirm }) {
+      const paidPeople = new Set(table.paidPeople || []);
+      const remaining = remainingTotal(table);
+      return (
+        <section className="mx-auto grid w-full max-w-3xl gap-4 rounded-lg border border-black/10 bg-paper/95 p-4 shadow-soft">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-black">Masayı Kapat: {table.name}</h2>
+              <p className="text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
+            </div>
+            <div className="text-left sm:text-right">
+              <p className="text-xs font-black text-stone-500">Genel toplam</p>
+              <strong className="block text-3xl font-black">{money(orderTotal(table))}</strong>
+              {table.isGroup && <p className="text-sm font-black text-stone-600">Kalan: {money(remaining)}</p>}
+            </div>
+          </div>
+          <ReceiptTable order={table} />
+          {table.isGroup && (
+            <div className="grid gap-2 rounded-lg border border-black/10 bg-mint/35 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-black">Kişi Hesapları</h3>
+                <strong className="rounded-full bg-white px-3 py-1 text-sm">Kalan {money(remaining)}</strong>
+              </div>
+              <div className="grid gap-2">
+                {(table.people || []).map((person) => {
+                  const total = personTotal(table, person.id);
+                  const paid = paidPeople.has(person.id);
+                  return (
+                    <article key={person.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg bg-paper p-2">
+                      <div className="min-w-0">
+                        <h4 className="truncate text-base font-black">{person.name}</h4>
+                        <p className="text-xs font-bold text-stone-500">{paid ? "Ödendi" : "Ödenmedi"}</p>
+                      </div>
+                      <div className="grid justify-items-end gap-1">
+                        <strong className="text-lg font-black">{money(total)}</strong>
+                        <button
+                          onClick={() => onPayPerson(person.id)}
+                          disabled={paid || total <= 0}
+                          className="min-h-9 rounded-lg bg-ink px-3 text-xs font-black text-white disabled:bg-stone-300 disabled:text-stone-600"
+                        >
+                          {paid ? "Kapandı" : "Bu Hesabı Kapat"}
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          <div className="grid gap-2 sm:grid-cols-2">
+            <button onClick={onCancel} className="h-14 rounded-lg bg-white font-black">Geri Dön</button>
+            <button onClick={onConfirm} className="h-14 rounded-lg bg-ink font-black text-white">Onayla ve Kapat</button>
+          </div>
+        </section>
+      );
+    }
+
+    function ClosedTables({ tables, selected, select, onPrint, onDelete, onHome }) {
+      return (
+        <section className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+          <div className="grid content-start gap-2">
+            {!tables.length && (
+              <div>
+                <EmptyState title="Kapanmış masa yok" body="Kapatılan adisyonlar burada listelenir." />
+                <ReturnHomeButton onClick={onHome} />
+              </div>
+            )}
+            {tables.map((table) => (
+              <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-3 shadow-sm">
+                <button onClick={() => select(table.id)} className="w-full text-left">
+                  <h2 className="text-xl font-black">{table.name}</h2>
+                  <p className="text-sm font-bold text-stone-500">{dateTime(table.closedAt)}</p>
+                  <strong className="mt-2 block text-lg">{money(table.total)}</strong>
+                </button>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button onClick={() => onPrint(table)} className="h-11 rounded-lg bg-mint font-black">Fiş</button>
+                  <button onClick={() => onDelete(table.id)} className="h-11 rounded-lg bg-rose font-black">Sil</button>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="rounded-lg border border-black/10 bg-white/75 p-4 shadow-soft">
+            {selected ? (
+              <div className="grid gap-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h2 className="text-2xl font-black">{selected.name}</h2>
+                    <p className="text-sm font-bold text-stone-500">Kapanış: {dateTime(selected.closedAt)}</p>
+                  </div>
+                  <strong className="text-3xl font-black">{money(selected.total)}</strong>
+                </div>
+                <ReceiptTable order={selected} />
+                <button onClick={() => onPrint(selected)} className="h-14 rounded-lg bg-ink text-lg font-black text-white">Fiş Çıktısı Al</button>
+              </div>
+            ) : (
+              <div>
+                <EmptyState title="Detay seçilmedi" body="Soldaki kapanmış adisyonlardan birini açın." />
+                <ReturnHomeButton onClick={onHome} />
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    function ReceiptTable({ order }) {
+      return (
+        <div className="rounded-lg border border-black/10 bg-white">
+          <div className="grid gap-2 p-2 sm:hidden">
+            {order.items.map((item) => (
+              <article key={item.id} className="rounded-lg border border-black/10 bg-paper p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="font-black leading-tight">{item.name}</h3>
+                    {item.personName && <div className="mt-1 text-xs font-bold text-stone-500">{item.personName}</div>}
+                    {item.lactoseFree && <div className="mt-1 text-xs font-bold text-stone-500">Laktozsuz süt</div>}
+                  </div>
+                  <strong className="shrink-0 rounded-full bg-lemon px-3 py-1 text-sm">{item.quantity} adet</strong>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-sm font-bold">
+                  <span className="text-stone-500">Birim</span>
+                  <span className="text-right">{money(item.price)}</span>
+                  <span className="text-stone-500">Ara Toplam</span>
+                  <span className="text-right font-black">{money(item.price * item.quantity)}</span>
+                </div>
+              </article>
+            ))}
+            <div className="rounded-lg bg-lemon/70 p-3 text-right text-xl font-black">
+              Genel Toplam: {money(orderTotal(order))}
+            </div>
+          </div>
+          <div className="hidden overflow-x-auto sm:block">
+            <table className="w-full min-w-[560px] text-left">
+              <thead className="bg-mint/60 text-sm">
+                <tr>
+                  <th className="p-3">Ürün</th>
+                  <th className="p-3 text-right">Adet</th>
+                  <th className="p-3 text-right">Birim Fiyat</th>
+                  <th className="p-3 text-right">Ara Toplam</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.items.map((item) => (
+                  <tr key={item.id} className="border-t border-black/10">
+                    <td className="p-3">
+                      <strong>{item.name}</strong>
+                      {item.personName && <div className="text-xs font-bold text-stone-500">{item.personName}</div>}
+                      {item.lactoseFree && <div className="text-xs font-bold text-stone-500">Laktozsuz süt</div>}
+                    </td>
+                    <td className="p-3 text-right font-bold">{item.quantity}</td>
+                    <td className="p-3 text-right font-bold">{money(item.price)}</td>
+                    <td className="p-3 text-right font-black">{money(item.price * item.quantity)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+              <tr className="border-t-2 border-black/20 bg-lemon/70">
+                <td className="p-3 text-xl font-black" colSpan="3">Genel Toplam</td>
+                <td className="p-3 text-right text-xl font-black">{money(orderTotal(order))}</td>
+              </tr>
+            </tfoot>
+          </table>
+          </div>
+        </div>
+      );
+    }
+
+    function SummaryLock({ password, setPassword, error, onSubmit, onHome }) {
+      return (
+        <section className="mx-auto grid w-full max-w-md gap-4 rounded-lg border border-black/10 bg-paper/95 p-5 shadow-soft">
+          <div>
+            <h2 className="text-2xl font-black">Gün Sonu</h2>
+            <p className="mt-1 text-sm font-bold text-stone-500">Bu ekran şifreyle açılır.</p>
+          </div>
+          <form onSubmit={onSubmit} className="grid gap-3">
+            <label className="grid gap-2 text-sm font-black text-stone-600">
+              Şifre
+              <input
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                inputMode="numeric"
+                type="password"
+                autoFocus
+                className="h-14 rounded-lg border border-black/10 bg-white px-4 text-2xl font-black tracking-normal outline-none focus:ring-4 focus:ring-lemon/45"
+                placeholder="••••"
+              />
+            </label>
+            {error && <p className="rounded-lg bg-rose/60 px-3 py-2 text-sm font-black">{error}</p>}
+            <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Giriş Yap</button>
+          </form>
+          <button onClick={onHome} className="h-12 rounded-lg bg-white font-black">Ana Ekrana Dön</button>
+        </section>
+      );
+    }
+
+    function DaySummary({ summary }) {
+      const [showProducts, setShowProducts] = useState(false);
+
+      return (
+        <section className="grid gap-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StatBox label="Toplam Ciro" value={money(summary.revenue)} tone="bg-lemon" />
+            <StatBox
+              label="Satılan Ürün"
+              value={summary.soldCount}
+              tone="bg-mint"
+              hint="Detay için dokun"
+              onClick={() => setShowProducts((value) => !value)}
+            />
+            <StatBox label="En Çok Satan Ürün" value={summary.topProduct || "-"} tone="bg-rose" />
+            <StatBox label="En Çok Satan Kategori" value={summary.topCategory || "-"} tone="bg-sky" />
+          </div>
+          {showProducts && (
+            <div className="rounded-lg border border-black/10 bg-white/80 p-3 shadow-soft">
+              <h2 className="text-xl font-black">Satılan Ürün Detayı</h2>
+              {summary.productRows.length ? (
+                <div className="mt-3 grid gap-2">
+                  {summary.productRows.map((item) => (
+                    <div key={item.name} className="flex items-center justify-between gap-3 rounded-lg bg-paper p-3">
+                      <span className="min-w-0 font-black leading-tight">{item.name}</span>
+                      <strong className="shrink-0 rounded-full bg-lemon px-3 py-1">{item.quantity} adet</strong>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-sm font-bold text-stone-500">Henüz satılan ürün yok.</p>
+              )}
+            </div>
+          )}
+          <div className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
+            <h2 className="text-2xl font-black">Gün Sonu Toplamı</h2>
+            <p className="mt-2 text-sm font-bold text-stone-500">Hesaplama kapanmış masalardan yapılır.</p>
+          </div>
+        </section>
+      );
+    }
+
+    function buildDaySummary(closedTables) {
+      const products = {};
+      const categories = {};
+      let revenue = 0;
+      let soldCount = 0;
+
+      closedTables.forEach((table) => {
+        revenue += table.total || orderTotal(table);
+        table.items.forEach((item) => {
+          soldCount += item.quantity;
+          products[item.menuId] = products[item.menuId] || { name: item.name, quantity: 0 };
+          products[item.menuId].quantity += item.quantity;
+          categories[item.categoryId] = categories[item.categoryId] || { name: item.categoryName, quantity: 0 };
+          categories[item.categoryId].quantity += item.quantity;
+        });
+      });
+
+      const topProduct = Object.values(products).sort((a, b) => b.quantity - a.quantity)[0];
+      const topCategory = Object.values(categories).sort((a, b) => b.quantity - a.quantity)[0];
+      const productRows = Object.values(products).sort((a, b) => b.quantity - a.quantity || a.name.localeCompare(b.name, "tr"));
+
       return {
-        categoryId,
-        name: { tr, en },
-        price,
-        description: { tr: descTr, en: descEn },
-        icon,
-        image
+        revenue,
+        soldCount,
+        topProduct: topProduct ? `${topProduct.name} (${topProduct.quantity})` : "",
+        topCategory: topCategory ? `${topCategory.name} (${topCategory.quantity})` : "",
+        productRows
       };
     }
 
-    function formatPrice(price) {
-      return `${price}₺`;
-    }
-
-    function applyLanguage() {
-      document.documentElement.lang = currentLang;
-      document.querySelectorAll("[data-i18n]").forEach(node => {
-        node.textContent = translations[currentLang][node.dataset.i18n];
-      });
-      search.placeholder = translations[currentLang].search;
-      document.querySelectorAll(".lang button").forEach(button => {
-        button.setAttribute("aria-pressed", String(button.dataset.lang === currentLang));
-      });
-      renderTabs();
-      renderProducts();
-    }
-
-    function renderTabs() {
-      tabs.innerHTML = categories.map(category => `
-        <button type="button" role="tab" data-category="${category.id}" aria-selected="${category.id === currentCategory}">
-          ${category[currentLang]}
-        </button>
+    function receiptMarkup(order) {
+      const rows = order.items.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.name)}${item.personName ? `<small>${escapeHtml(item.personName)}</small>` : ""}${item.lactoseFree ? `<small>Laktozsuz süt</small>` : ""}</td>
+          <td>${item.quantity}</td>
+          <td>${money(item.price)}</td>
+          <td>${money(item.price * item.quantity)}</td>
+        </tr>
       `).join("");
+
+      return `
+        <style>
+          .receipt { width: 80mm; margin: 0 auto; color: #111; font-family: Arial, sans-serif; }
+          .receipt h1 { margin: 0 0 4mm; font-size: 18px; text-align: center; }
+          .receipt p { margin: 0 0 2mm; font-size: 12px; }
+          .receipt table { width: 100%; border-collapse: collapse; font-size: 11px; }
+          .receipt th, .receipt td { border-bottom: 1px solid #ddd; padding: 5px 2px; text-align: right; vertical-align: top; }
+          .receipt th:first-child, .receipt td:first-child { text-align: left; }
+          .receipt small { display: block; color: #555; margin-top: 2px; }
+          .receipt .total { font-size: 16px; font-weight: 800; text-align: right; margin-top: 4mm; }
+        </style>
+        <section class="receipt">
+          <h1>Macaron Playground</h1>
+          <p><strong>Masa:</strong> ${escapeHtml(order.name)}</p>
+          <p><strong>Açılış:</strong> ${dateTime(order.openedAt)}</p>
+          <p><strong>Kapanış:</strong> ${dateTime(order.closedAt || new Date().toISOString())}</p>
+          <table>
+            <thead><tr><th>Ürün</th><th>Adet</th><th>Birim</th><th>Toplam</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+          <div class="total">Genel Toplam: ${money(orderTotal(order))}</div>
+        </section>
+      `;
     }
 
-    function filteredItems() {
-      const query = search.value.trim().toLocaleLowerCase("tr-TR");
-      return items.filter(entry => {
-        const matchesCategory = currentCategory === "all" || entry.categoryId === currentCategory;
-        const haystack = `${entry.name.tr} ${entry.name.en} ${entry.category.tr} ${entry.category.en}`.toLocaleLowerCase("tr-TR");
-        return matchesCategory && (!query || haystack.includes(query));
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
       });
     }
-
-    function renderProducts() {
-      const visible = filteredItems();
-      const activeCategory = categoryMap.get(currentCategory);
-      categoryTitle.textContent = currentCategory === "all" ? translations[currentLang].all : activeCategory[currentLang];
-      countText.textContent = translations[currentLang].itemCount(visible.length);
-      productGrid.innerHTML = visible.map(entry => `
-        <article class="card">
-          <button class="product-button" type="button" data-id="${entry.id}" aria-label="${entry.name[currentLang]}">
-            <div class="product-art ${entry.image ? "has-photo" : ""}" style="--tile: ${entry.palette}">
-              ${entry.image ? `<img src="${entry.image}" alt="${entry.name[currentLang]}">` : `<b>${entry.icon}</b>`}
-            </div>
-            <div class="product-body">
-              <h3 class="product-title">${entry.name[currentLang]}</h3>
-              <div class="product-meta">
-                <span>${entry.category[currentLang]}</span>
-                <strong class="price">${formatPrice(entry.price)}</strong>
-              </div>
-            </div>
-          </button>
-        </article>
-      `).join("");
-    }
-
-    function openProduct(id) {
-      const entry = items.find(product => product.id === id);
-      if (!entry) return;
-      modalArt.style.setProperty("--tile", entry.palette);
-      modalArt.classList.toggle("has-photo", Boolean(entry.image));
-      modalArt.innerHTML = entry.image ? `<img src="${entry.image}" alt="${entry.name[currentLang]}">` : `<b>${entry.icon}</b>`;
-      modalTitle.textContent = entry.name[currentLang];
-      modalPrice.textContent = formatPrice(entry.price);
-      modalDescription.textContent = entry.description[currentLang] || translations[currentLang].defaultDetail(entry);
-      modalChips.innerHTML = [
-        `${translations[currentLang].category}: ${entry.category[currentLang]}`,
-        `${translations[currentLang].price}: ${formatPrice(entry.price)}`
-      ].map(text => `<span class="chip">${text}</span>`).join("");
-      modal.setAttribute("open", "");
-      closeModal.focus();
-    }
-
-    function hideModal() {
-      modal.removeAttribute("open");
-    }
-
-    function hideWelcome() {
-      welcomePopup.hidden = true;
-      document.body.classList.remove("welcome-open");
-    }
-
-    document.querySelector(".lang").addEventListener("click", event => {
-      const button = event.target.closest("button[data-lang]");
-      if (!button) return;
-      currentLang = button.dataset.lang;
-      applyLanguage();
-    });
-
-    tabs.addEventListener("click", event => {
-      const button = event.target.closest("button[data-category]");
-      if (!button) return;
-      currentCategory = button.dataset.category;
-      renderTabs();
-      renderProducts();
-    });
-
-    search.addEventListener("input", renderProducts);
-
-    productGrid.addEventListener("click", event => {
-      const button = event.target.closest("button[data-id]");
-      if (!button) return;
-      openProduct(button.dataset.id);
-    });
-
-    closeModal.addEventListener("click", hideModal);
-    modal.addEventListener("click", event => {
-      if (event.target === modal) hideModal();
-    });
-    window.addEventListener("keydown", event => {
-      if (event.key === "Escape" && !welcomePopup.hidden) hideWelcome();
-      if (event.key === "Escape") hideModal();
-    });
-
-    applyLanguage();
-    document.body.classList.add("welcome-open");
-    welcomeEnter.addEventListener("click", hideWelcome);
-    welcomeClose.addEventListener("click", hideWelcome);
   </script>
 </body>
 </html>
