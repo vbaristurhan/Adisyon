@@ -41,6 +41,7 @@ window.menuItems = [
   { id: "dessert-10", categoryId: "dessert", name: "Sufle", price: 275 },
   { id: "icecream-1", categoryId: "icecream", name: "Çilekli (Top)", price: 75 },
   { id: "icecream-2", categoryId: "icecream", name: "Çikolatalı (Top)", price: 75 },
+  { id: "icecream-3", categoryId: "icecream", name: "Diğer (Top)", price: 75 },
   { id: "coffee-1", categoryId: "coffee", name: "Americano", price: 160 },
   { id: "coffee-2", categoryId: "coffee", name: "Ice Americano", price: 170 },
   { id: "coffee-3", categoryId: "coffee", name: "Espresso", price: 100 },
