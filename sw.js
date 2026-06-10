@@ -1,4 +1,4 @@
-const CACHE_NAME = "macaron-adisyon-pwa-v12";
+const CACHE_NAME = "macaron-adisyon-pwa-v14";
 const APP_ASSETS = [
   "./",
   "./index.html",
