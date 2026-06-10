@@ -58,7 +58,7 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="./menuData.js?v=20260610-2"></script>
+  <script src="./menuData.js"></script>
   <script type="text/babel">
     const { useEffect, useMemo, useState } = React;
 
@@ -149,7 +149,7 @@
       const [activeTableId, setActiveTableId] = useState(null);
       const [closingTableId, setClosingTableId] = useState(null);
       const [selectedClosedId, setSelectedClosedId] = useState(null);
-      const [category, setCategory] = useState("all");
+      const [category, setCategory] = useState("breakfast");
       const [tableName, setTableName] = useState("");
       const [groupTableName, setGroupTableName] = useState("");
       const [firstPersonName, setFirstPersonName] = useState("");
@@ -179,6 +179,7 @@
         setActiveTableId(null);
         setClosingTableId(null);
         setSelectedClosedId(null);
+        setCategory("breakfast");
         setSummaryUnlocked(false);
         setSummaryPassword("");
         setSummaryError("");
@@ -612,8 +613,8 @@
     function ActiveTable({ table, category, setCategory, products, requestProduct, changeQuantity, removeLine, toggleLactoseFree, activePersonId, setActivePersonId, addPerson, finishOrder }) {
       const [newPersonName, setNewPersonName] = useState("");
       const orderedCategories = [
-        ...window.menuCategories.filter((item) => item.id !== "all"),
-        window.menuCategories.find((item) => item.id === "all")
+        ...window.menuCategories.filter((item) => item.id !== "all" && item.id !== "cold-drinks"),
+        window.menuCategories.find((item) => item.id === "cold-drinks")
       ].filter(Boolean);
       const people = table.people || [];
       const activePerson = people.find((person) => person.id === activePersonId);
