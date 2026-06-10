@@ -1,5 +1,4 @@
 window.menuCategories = [
-  { id: "all", name: "Tümü" },
   { id: "breakfast", name: "Kahvaltılar" },
   { id: "toast", name: "Tostlar" },
   { id: "sandwich", name: "Sandviçler" },
