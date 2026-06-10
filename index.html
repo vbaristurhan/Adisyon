@@ -64,6 +64,34 @@
 
     const STORAGE_KEY = "macaron-playground-adisyon-v2";
     const categoryMap = Object.fromEntries(window.menuCategories.map((category) => [category.id, category]));
+    const GAME_OPTIONS = [
+      {
+        id: "karaoke",
+        name: "Kareoke",
+        options: [
+          { id: "karaoke-15", label: "15 dk", price: 200 },
+          { id: "karaoke-30", label: "30 dk", price: 400 },
+          { id: "karaoke-60", label: "1 saat", price: 750 }
+        ]
+      },
+      {
+        id: "vr",
+        name: "VR",
+        options: [
+          { id: "vr-6", label: "6 dk", price: 120 },
+          { id: "vr-12", label: "12 dk", price: 200 },
+          { id: "vr-18", label: "18 dk", price: 250 }
+        ]
+      },
+      {
+        id: "play-area",
+        name: "Evcilik Oyun Alanı / Softplay / Bahçe",
+        options: [
+          { id: "play-area-30", label: "30 dk", price: 200 },
+          { id: "play-area-60", label: "1 saat", price: 300 }
+        ]
+      }
+    ];
     function uid(prefix) {
       return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     }
@@ -85,6 +113,16 @@
 
     function orderTotal(order) {
       return order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
+
+    function gameDeductedTotal(order) {
+      return order.items
+        .filter((item) => item.isGame && item.cardDeducted)
+        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
+
+    function payableTotal(order) {
+      return Math.max(0, orderTotal(order) - gameDeductedTotal(order));
     }
 
     function itemCount(order) {
@@ -154,11 +192,15 @@
       const [groupTableName, setGroupTableName] = useState("");
       const [firstPersonName, setFirstPersonName] = useState("");
       const [activePersonId, setActivePersonId] = useState(null);
+      const [gameTableId, setGameTableId] = useState(null);
+      const [selectedGameId, setSelectedGameId] = useState(GAME_OPTIONS[0].id);
       const [toast, setToast] = useState("");
       const [pendingProduct, setPendingProduct] = useState(null);
-      const [summaryUnlocked, setSummaryUnlocked] = useState(false);
-      const [summaryPassword, setSummaryPassword] = useState("");
-      const [summaryError, setSummaryError] = useState("");
+      const [appUnlocked, setAppUnlocked] = useState(false);
+      const [appName, setAppName] = useState("");
+      const [appPassword, setAppPassword] = useState("");
+      const [appError, setAppError] = useState("");
+      const [currentUser, setCurrentUser] = useState(null);
 
       const activeTable = openTables.find((table) => table.id === activeTableId);
       const closingTable = openTables.find((table) => table.id === closingTableId);
@@ -180,34 +222,51 @@
         setClosingTableId(null);
         setSelectedClosedId(null);
         setCategory("breakfast");
-        setSummaryUnlocked(false);
-        setSummaryPassword("");
-        setSummaryError("");
       }
 
       function openSummary() {
-        setSummaryUnlocked(false);
-        setSummaryPassword("");
-        setSummaryError("");
+        if (currentUser?.role !== "admin") {
+          setToast("Yetkiniz yok");
+          return;
+        }
         setScreen("summary");
       }
 
-      function unlockSummary(event) {
+      function openGameScreen() {
+        setGameTableId(activeTableId || openTables[0]?.id || null);
+        setSelectedGameId(GAME_OPTIONS[0].id);
+        setScreen("game");
+      }
+
+      function unlockApp(event) {
         event.preventDefault();
-        if (summaryPassword === "1425") {
-          setSummaryUnlocked(true);
-          setSummaryPassword("");
-          setSummaryError("");
+        const cleanName = appName.trim();
+        if (!cleanName) {
+          setAppError("İsim girin");
           return;
         }
-        setSummaryError("Şifre hatalı");
+        if (appPassword === "0000" || appPassword === "1425") {
+          setCurrentUser({ name: cleanName, role: appPassword === "1425" ? "admin" : "waiter" });
+          setAppUnlocked(true);
+          setAppName("");
+          setAppPassword("");
+          setAppError("");
+          return;
+        }
+        setAppError("Şifre hatalı");
       }
 
       function createTable(event) {
         event.preventDefault();
         const name = tableName.trim();
         if (!name) return;
-        const table = { id: uid("table"), name, openedAt: new Date().toISOString(), items: [] };
+        const table = {
+          id: uid("table"),
+          name,
+          openedAt: new Date().toISOString(),
+          waiterName: currentUser?.name || "",
+          items: []
+        };
         setOpenTables((tables) => [table, ...tables]);
         setTableName("");
         setActiveTableId(table.id);
@@ -224,6 +283,7 @@
           id: uid("table"),
           name,
           openedAt: new Date().toISOString(),
+          waiterName: currentUser?.name || "",
           isGroup: true,
           people: [person],
           paidPeople: [],
@@ -310,6 +370,33 @@
         setToast(activePerson ? `${product.name} ${activePerson.name} için eklendi` : `${product.name} eklendi`);
       }
 
+      function addGameToTable(tableId, game, option) {
+        if (!tableId || !game || !option) {
+          setToast("Önce masa seçin");
+          return;
+        }
+        updateTableById(tableId, (table) => ({
+          ...table,
+          items: [
+            ...table.items,
+            {
+              id: uid("game"),
+              menuId: option.id,
+              name: `${game.name} - ${option.label}`,
+              categoryId: "game",
+              categoryName: "Oyun",
+              price: option.price,
+              quantity: 1,
+              isGame: true,
+              cardDeducted: false,
+              gameName: game.name,
+              gameDuration: option.label
+            }
+          ]
+        }));
+        setToast(`${game.name} ${option.label} eklendi`);
+      }
+
       function changeQuantity(lineId, delta) {
         updateActiveTable((table) => ({
           ...table,
@@ -333,13 +420,23 @@
         }));
       }
 
+      function toggleGameDeducted(lineId) {
+        if (!closingTable) return;
+        updateTableById(closingTable.id, (table) => ({
+          ...table,
+          items: table.items.map((item) => item.id === lineId ? { ...item, cardDeducted: !item.cardDeducted } : item)
+        }));
+      }
+
       function closeTable() {
-        if (!closingTable || !closingTable.items.length) return;
-        const total = orderTotal(closingTable);
+        if (!closingTable) return;
+        const total = payableTotal(closingTable);
         const closed = {
           ...closingTable,
           closedAt: new Date().toISOString(),
           total,
+          grossTotal: orderTotal(closingTable),
+          deductedTotal: gameDeductedTotal(closingTable),
           soldCount: itemCount(closingTable)
         };
         setClosedTables((tables) => [closed, ...tables]);
@@ -378,6 +475,21 @@
       const visibleProducts = window.menuItems.filter((item) => category === "all" || item.categoryId === category);
       const daySummary = useMemo(() => buildDaySummary(closedTables), [closedTables]);
 
+      if (!appUnlocked) {
+        return (
+          <main className="no-print mx-auto grid min-h-screen w-full max-w-md content-center px-4 py-6">
+            <AppLock
+              name={appName}
+              setName={setAppName}
+              password={appPassword}
+              setPassword={setAppPassword}
+              error={appError}
+              onSubmit={unlockApp}
+            />
+          </main>
+        );
+      }
+
       return (
         <main className="no-print mx-auto flex min-h-screen w-full max-w-7xl flex-col px-2 py-2 sm:px-5 sm:py-4 lg:px-8">
           {toast && (
@@ -386,18 +498,24 @@
             </div>
           )}
 
-          <header className="mb-3 flex flex-col gap-2 rounded-lg border border-white/70 bg-white/55 p-2 shadow-soft backdrop-blur sm:mb-4 sm:gap-3 sm:p-4 md:flex-row md:items-center md:justify-between">
-            <button type="button" onClick={goHome} className="min-w-0 text-left">
+          <header className="mb-3 flex flex-col items-center gap-2 rounded-lg border border-white/70 bg-white/55 p-2 text-center shadow-soft backdrop-blur sm:mb-4 sm:gap-3 sm:p-4">
+            <button type="button" onClick={goHome} className="min-w-0 text-center">
+              <h1 className="text-2xl font-black tracking-normal sm:text-4xl">Macaron Playground</h1>
               <p className="text-xs font-black uppercase tracking-normal text-stone-500 sm:text-sm">Adisyon</p>
-              <h1 className="text-xl font-black tracking-normal sm:text-4xl">Macaron Playground</h1>
             </button>
-            <div className="grid w-full grid-cols-2 gap-2 md:w-auto md:grid-cols-5">
+            <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-6">
               <TopButton active={screen === "new"} onClick={() => setScreen("new")}>Yeni Masa Aç</TopButton>
               <TopButton active={screen === "groupNew"} onClick={() => setScreen("groupNew")}>Grup Masası Aç</TopButton>
               <TopButton active={screen === "open"} onClick={() => setScreen("open")}>Açık Masalar</TopButton>
               <TopButton active={screen === "closed"} onClick={() => setScreen("closed")}>Kapanmış Masalar</TopButton>
+              <TopButton active={screen === "game"} onClick={openGameScreen}>Oyun Ekle</TopButton>
               <TopButton active={screen === "summary"} onClick={openSummary}>Gün Sonu</TopButton>
             </div>
+            {currentUser && (
+              <p className="rounded-lg bg-white/70 px-3 py-2 text-xs font-black text-stone-600 md:hidden">
+                Garson: {currentUser.name}
+              </p>
+            )}
           </header>
 
           {screen === "home" && (
@@ -427,6 +545,7 @@
                 </label>
                 <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Masa Oluştur</button>
               </form>
+              <ReturnHomeButton onClick={goHome} />
             </section>
           )}
 
@@ -454,6 +573,7 @@
                 </label>
                 <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Grup Masası Oluştur</button>
               </form>
+              <ReturnHomeButton onClick={goHome} />
             </section>
           )}
 
@@ -468,6 +588,18 @@
                 setScreen("table");
               }}
               onClose={(id) => { setActiveTableId(id); setClosingTableId(id); setScreen("close"); }}
+            />
+          )}
+
+          {screen === "game" && (
+            <GameAdd
+              tables={openTables}
+              selectedTableId={gameTableId}
+              setSelectedTableId={setGameTableId}
+              selectedGameId={selectedGameId}
+              setSelectedGameId={setSelectedGameId}
+              onAdd={addGameToTable}
+              onHome={goHome}
             />
           )}
 
@@ -498,7 +630,7 @@
           )}
 
           {screen === "close" && closingTable && (
-            <ClosePreview table={closingTable} onCancel={() => setScreen("table")} onPayPerson={markPersonPaid} onConfirm={confirmCloseTable} />
+            <ClosePreview table={closingTable} onCancel={() => setScreen("table")} onPayPerson={markPersonPaid} onToggleGameDeducted={toggleGameDeducted} onConfirm={confirmCloseTable} />
           )}
 
           {screen === "closed" && (
@@ -512,19 +644,7 @@
             />
           )}
 
-          {screen === "summary" && (
-            summaryUnlocked
-              ? <DaySummary summary={daySummary} />
-              : (
-                <SummaryLock
-                  password={summaryPassword}
-                  setPassword={setSummaryPassword}
-                  error={summaryError}
-                  onSubmit={unlockSummary}
-                  onHome={goHome}
-                />
-              )
-          )}
+          {screen === "summary" && <DaySummary summary={daySummary} />}
         </main>
       );
     }
@@ -553,7 +673,7 @@
     function ReturnHomeButton({ onClick }) {
       return (
         <button onClick={onClick} className="mt-3 min-h-12 w-full rounded-lg bg-ink px-4 font-black text-white shadow-soft">
-          Ana Ekrana Dön
+          Ana Sayfaya Dön
         </button>
       );
     }
@@ -569,24 +689,28 @@
       }
 
       return (
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {tables.map((table) => (
-            <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-2xl font-black">{table.name}</h2>
-                  <p className="mt-1 text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
+        <section className="grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {tables.map((table) => (
+              <article key={table.id} className="rounded-lg border border-black/10 bg-paper/90 p-4 shadow-soft">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h2 className="text-2xl font-black">{table.name}</h2>
+                    <p className="mt-1 text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
+                    {table.waiterName && <p className="mt-1 text-xs font-black text-stone-500">Garson: {table.waiterName}</p>}
+                  </div>
+                  <strong className="shrink-0 rounded-full bg-lemon px-2 py-1 text-sm">
+                    {table.isGroup ? `Kalan ${money(remainingTotal(table))}` : money(orderTotal(table))}
+                  </strong>
                 </div>
-                <strong className="shrink-0 rounded-full bg-lemon px-2 py-1 text-sm">
-                  {table.isGroup ? `Kalan ${money(remainingTotal(table))}` : money(orderTotal(table))}
-                </strong>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <button onClick={() => onOpen(table.id)} className="h-12 rounded-lg bg-mint px-2 text-sm font-black sm:text-base">Adisyon Aç</button>
-                <button onClick={() => onClose(table.id)} disabled={!table.items.length} className="h-12 rounded-lg bg-rose px-2 text-sm font-black sm:text-base disabled:cursor-not-allowed disabled:opacity-45">Masayı Kapat</button>
-              </div>
-            </article>
-          ))}
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button onClick={() => onOpen(table.id)} className="h-12 rounded-lg bg-mint px-2 text-sm font-black sm:text-base">Adisyon Aç</button>
+                  <button onClick={() => onClose(table.id)} className="h-12 rounded-lg bg-rose px-2 text-sm font-black sm:text-base">Masayı Kapat</button>
+                </div>
+              </article>
+            ))}
+          </div>
+          <ReturnHomeButton onClick={onHome} />
         </section>
       );
     }
@@ -607,6 +731,82 @@
             </div>
           </section>
         </div>
+      );
+    }
+
+    function GameAdd({ tables, selectedTableId, setSelectedTableId, selectedGameId, setSelectedGameId, onAdd, onHome }) {
+      const selectedGame = GAME_OPTIONS.find((game) => game.id === selectedGameId) || GAME_OPTIONS[0];
+      const selectedTable = tables.find((table) => table.id === selectedTableId);
+
+      if (!tables.length) {
+        return (
+          <section className="mx-auto w-full max-w-md">
+            <EmptyState title="Açık masa yok" body="Oyun eklemek için önce masa açın." />
+            <ReturnHomeButton onClick={onHome} />
+          </section>
+        );
+      }
+
+      return (
+        <section className="mx-auto grid w-full max-w-3xl gap-4 rounded-lg border border-black/10 bg-paper/95 p-4 shadow-soft">
+          <div>
+            <h2 className="text-2xl font-black">Oyun Ekle</h2>
+            <p className="mt-1 text-sm font-bold text-stone-500">Masa seçin, ardından oyun süresine dokunun.</p>
+          </div>
+
+          <div className="grid gap-2">
+            <h3 className="text-sm font-black text-stone-600">Masa</h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {tables.map((table) => (
+                <button
+                  key={table.id}
+                  onClick={() => setSelectedTableId(table.id)}
+                  className={`min-h-12 rounded-lg border px-2 text-sm font-black leading-tight ${selectedTableId === table.id ? "border-ink bg-lemon" : "border-black/10 bg-white"}`}
+                >
+                  {table.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            <h3 className="text-sm font-black text-stone-600">Oyun</h3>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {GAME_OPTIONS.map((game) => (
+                <button
+                  key={game.id}
+                  onClick={() => setSelectedGameId(game.id)}
+                  className={`min-h-14 rounded-lg border px-3 text-sm font-black leading-tight ${selectedGameId === game.id ? "border-ink bg-mint" : "border-black/10 bg-white"}`}
+                >
+                  {game.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            <h3 className="text-sm font-black text-stone-600">{selectedGame.name}</h3>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {selectedGame.options.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => onAdd(selectedTableId, selectedGame, option)}
+                  className="min-h-16 rounded-lg bg-ink px-3 text-left font-black text-white shadow-soft"
+                >
+                  <span className="block text-lg">{option.label}</span>
+                  <span className="block text-sm text-white/80">{money(option.price)}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {selectedTable && (
+            <div className="rounded-lg bg-white/75 p-3 text-sm font-black text-stone-600">
+              Seçili masa: {selectedTable.name}
+            </div>
+          )}
+          <ReturnHomeButton onClick={onHome} />
+        </section>
       );
     }
 
@@ -660,6 +860,7 @@
               <div>
                 <h2 className="text-lg font-black leading-tight sm:text-2xl">{table.name}</h2>
                 <p className="text-xs font-bold text-stone-500 sm:text-sm">{itemCount(table)} ürün</p>
+                {table.waiterName && <p className="text-xs font-black text-stone-500">Garson: {table.waiterName}</p>}
               </div>
               <strong className="shrink-0 rounded-full bg-lemon px-2 py-1.5 text-sm font-black sm:px-3 sm:py-2 sm:text-lg">{money(orderTotal(table))}</strong>
             </div>
@@ -708,6 +909,9 @@
                       {table.isGroup && line.personName && (
                         <p className="mt-0.5 text-[11px] font-black text-sky">{line.personName}</p>
                       )}
+                      {line.isGame && (
+                        <p className="mt-0.5 text-[11px] font-black text-stone-500">Oyun</p>
+                      )}
                       {line.categoryId === "coffee" && (
                         <label className="mt-1 flex w-fit items-center gap-1.5 rounded-full bg-white px-2 py-0.5 text-[11px] font-black sm:text-xs">
                           <input
@@ -735,23 +939,50 @@
       );
     }
 
-    function ClosePreview({ table, onCancel, onPayPerson, onConfirm }) {
+    function ClosePreview({ table, onCancel, onPayPerson, onToggleGameDeducted, onConfirm }) {
       const paidPeople = new Set(table.paidPeople || []);
       const remaining = remainingTotal(table);
+      const deducted = gameDeductedTotal(table);
+      const payable = payableTotal(table);
+      const gameLines = table.items.filter((item) => item.isGame);
       return (
         <section className="mx-auto grid w-full max-w-3xl gap-4 rounded-lg border border-black/10 bg-paper/95 p-4 shadow-soft">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-2xl font-black">Masayı Kapat: {table.name}</h2>
               <p className="text-sm font-bold text-stone-500">{dateTime(table.openedAt)}</p>
+              {table.waiterName && <p className="text-sm font-black text-stone-500">Garson: {table.waiterName}</p>}
             </div>
             <div className="text-left sm:text-right">
               <p className="text-xs font-black text-stone-500">Genel toplam</p>
               <strong className="block text-3xl font-black">{money(orderTotal(table))}</strong>
+              {deducted > 0 && <p className="text-sm font-black text-rose">Karttan düşülen: -{money(deducted)}</p>}
+              <p className="text-sm font-black text-stone-700">Ödenecek: {money(payable)}</p>
               {table.isGroup && <p className="text-sm font-black text-stone-600">Kalan: {money(remaining)}</p>}
             </div>
           </div>
           <ReceiptTable order={table} />
+          {gameLines.length > 0 && (
+            <div className="grid gap-2 rounded-lg border border-black/10 bg-lemon/35 p-3">
+              <h3 className="text-lg font-black">Oyun Kart Düşümü</h3>
+              {gameLines.map((item) => (
+                <label key={item.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-paper p-3">
+                  <span className="min-w-0">
+                    <strong className="block truncate">{item.name}</strong>
+                    <span className="text-xs font-bold text-stone-500">{money(item.price * item.quantity)}</span>
+                  </span>
+                  <span className="flex items-center gap-2 text-sm font-black">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(item.cardDeducted)}
+                      onChange={() => onToggleGameDeducted(item.id)}
+                    />
+                    Karttan düşüldü
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
           {table.isGroup && (
             <div className="grid gap-2 rounded-lg border border-black/10 bg-mint/35 p-3">
               <div className="flex items-center justify-between gap-3">
@@ -807,6 +1038,7 @@
                 <button onClick={() => select(table.id)} className="w-full text-left">
                   <h2 className="text-xl font-black">{table.name}</h2>
                   <p className="text-sm font-bold text-stone-500">{dateTime(table.closedAt)}</p>
+                  {table.waiterName && <p className="text-xs font-black text-stone-500">Garson: {table.waiterName}</p>}
                   <strong className="mt-2 block text-lg">{money(table.total)}</strong>
                 </button>
                 <div className="mt-3 grid grid-cols-2 gap-2">
@@ -823,6 +1055,7 @@
                   <div>
                     <h2 className="text-2xl font-black">{selected.name}</h2>
                     <p className="text-sm font-bold text-stone-500">Kapanış: {dateTime(selected.closedAt)}</p>
+                    {selected.waiterName && <p className="text-sm font-black text-stone-500">Garson: {selected.waiterName}</p>}
                   </div>
                   <strong className="text-3xl font-black">{money(selected.total)}</strong>
                 </div>
@@ -843,6 +1076,11 @@
     function ReceiptTable({ order }) {
       return (
         <div className="rounded-lg border border-black/10 bg-white">
+          {order.waiterName && (
+            <div className="border-b border-black/10 bg-mint/35 px-3 py-2 text-sm font-black text-stone-600">
+              Garson: {order.waiterName}
+            </div>
+          )}
           <div className="grid gap-2 p-2 sm:hidden">
             {order.items.map((item) => (
               <article key={item.id} className="rounded-lg border border-black/10 bg-paper p-3">
@@ -850,6 +1088,7 @@
                   <div className="min-w-0">
                     <h3 className="font-black leading-tight">{item.name}</h3>
                     {item.personName && <div className="mt-1 text-xs font-bold text-stone-500">{item.personName}</div>}
+                    {item.isGame && <div className="mt-1 text-xs font-bold text-stone-500">Oyun{item.cardDeducted ? " - karttan düşüldü" : ""}</div>}
                     {item.lactoseFree && <div className="mt-1 text-xs font-bold text-stone-500">Laktozsuz süt</div>}
                   </div>
                   <strong className="shrink-0 rounded-full bg-lemon px-3 py-1 text-sm">{item.quantity} adet</strong>
@@ -864,6 +1103,14 @@
             ))}
             <div className="rounded-lg bg-lemon/70 p-3 text-right text-xl font-black">
               Genel Toplam: {money(orderTotal(order))}
+            </div>
+            {gameDeductedTotal(order) > 0 && (
+              <div className="rounded-lg bg-rose/35 p-3 text-right font-black">
+                Karttan Düşülen: -{money(gameDeductedTotal(order))}
+              </div>
+            )}
+            <div className="rounded-lg bg-mint/70 p-3 text-right text-xl font-black">
+              Ödenecek: {money(payableTotal(order))}
             </div>
           </div>
           <div className="hidden overflow-x-auto sm:block">
@@ -882,6 +1129,7 @@
                     <td className="p-3">
                       <strong>{item.name}</strong>
                       {item.personName && <div className="text-xs font-bold text-stone-500">{item.personName}</div>}
+                      {item.isGame && <div className="text-xs font-bold text-stone-500">Oyun{item.cardDeducted ? " - karttan düşüldü" : ""}</div>}
                       {item.lactoseFree && <div className="text-xs font-bold text-stone-500">Laktozsuz süt</div>}
                     </td>
                     <td className="p-3 text-right font-bold">{item.quantity}</td>
@@ -895,6 +1143,16 @@
                 <td className="p-3 text-xl font-black" colSpan="3">Genel Toplam</td>
                 <td className="p-3 text-right text-xl font-black">{money(orderTotal(order))}</td>
               </tr>
+              {gameDeductedTotal(order) > 0 && (
+                <tr className="border-t border-black/10 bg-rose/30">
+                  <td className="p-3 font-black" colSpan="3">Karttan Düşülen</td>
+                  <td className="p-3 text-right font-black">-{money(gameDeductedTotal(order))}</td>
+                </tr>
+              )}
+              <tr className="border-t border-black/10 bg-mint/60">
+                <td className="p-3 text-xl font-black" colSpan="3">Ödenecek</td>
+                <td className="p-3 text-right text-xl font-black">{money(payableTotal(order))}</td>
+              </tr>
             </tfoot>
           </table>
           </div>
@@ -902,14 +1160,25 @@
       );
     }
 
-    function SummaryLock({ password, setPassword, error, onSubmit, onHome }) {
+    function AppLock({ name, setName, password, setPassword, error, onSubmit }) {
       return (
-        <section className="mx-auto grid w-full max-w-md gap-4 rounded-lg border border-black/10 bg-paper/95 p-5 shadow-soft">
+        <section className="grid gap-4 rounded-lg border border-black/10 bg-paper/95 p-5 shadow-soft">
           <div>
-            <h2 className="text-2xl font-black">Gün Sonu</h2>
-            <p className="mt-1 text-sm font-bold text-stone-500">Bu ekran şifreyle açılır.</p>
+            <p className="text-xs font-black uppercase tracking-normal text-stone-500">Macaron Playground</p>
+            <h1 className="mt-1 text-3xl font-black">Uygulamaya Giriş</h1>
+            <p className="mt-2 text-sm font-bold text-stone-500">Adisyon ekranını açmak için isim ve şifre girin.</p>
           </div>
           <form onSubmit={onSubmit} className="grid gap-3">
+            <label className="grid gap-2 text-sm font-black text-stone-600">
+              İsim
+              <input
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                autoFocus
+                className="h-14 rounded-lg border border-black/10 bg-white px-4 text-xl font-black outline-none focus:ring-4 focus:ring-mint/45"
+                placeholder="Garson adı"
+              />
+            </label>
             <label className="grid gap-2 text-sm font-black text-stone-600">
               Şifre
               <input
@@ -917,15 +1186,13 @@
                 onChange={(event) => setPassword(event.target.value)}
                 inputMode="numeric"
                 type="password"
-                autoFocus
-                className="h-14 rounded-lg border border-black/10 bg-white px-4 text-2xl font-black tracking-normal outline-none focus:ring-4 focus:ring-lemon/45"
+                className="h-14 rounded-lg border border-black/10 bg-white px-4 text-2xl font-black tracking-normal outline-none focus:ring-4 focus:ring-mint/45"
                 placeholder="••••"
               />
             </label>
             {error && <p className="rounded-lg bg-rose/60 px-3 py-2 text-sm font-black">{error}</p>}
             <button className="h-14 rounded-lg bg-ink px-5 text-lg font-black text-white shadow-soft">Giriş Yap</button>
           </form>
-          <button onClick={onHome} className="h-12 rounded-lg bg-white font-black">Ana Ekrana Dön</button>
         </section>
       );
     }
@@ -979,7 +1246,7 @@
       let soldCount = 0;
 
       closedTables.forEach((table) => {
-        revenue += table.total || orderTotal(table);
+        revenue += table.total ?? orderTotal(table);
         table.items.forEach((item) => {
           soldCount += item.quantity;
           products[item.menuId] = products[item.menuId] || { name: item.name, quantity: 0 };
@@ -1005,7 +1272,7 @@
     function receiptMarkup(order) {
       const rows = order.items.map((item) => `
         <tr>
-          <td>${escapeHtml(item.name)}${item.personName ? `<small>${escapeHtml(item.personName)}</small>` : ""}${item.lactoseFree ? `<small>Laktozsuz süt</small>` : ""}</td>
+          <td>${escapeHtml(item.name)}${item.personName ? `<small>${escapeHtml(item.personName)}</small>` : ""}${item.isGame ? `<small>Oyun${item.cardDeducted ? " - karttan düşüldü" : ""}</small>` : ""}${item.lactoseFree ? `<small>Laktozsuz süt</small>` : ""}</td>
           <td>${item.quantity}</td>
           <td>${money(item.price)}</td>
           <td>${money(item.price * item.quantity)}</td>
@@ -1026,6 +1293,7 @@
         <section class="receipt">
           <h1>Macaron Playground</h1>
           <p><strong>Masa:</strong> ${escapeHtml(order.name)}</p>
+          ${order.waiterName ? `<p><strong>Garson:</strong> ${escapeHtml(order.waiterName)}</p>` : ""}
           <p><strong>Açılış:</strong> ${dateTime(order.openedAt)}</p>
           <p><strong>Kapanış:</strong> ${dateTime(order.closedAt || new Date().toISOString())}</p>
           <table>
@@ -1033,6 +1301,8 @@
             <tbody>${rows}</tbody>
           </table>
           <div class="total">Genel Toplam: ${money(orderTotal(order))}</div>
+          ${gameDeductedTotal(order) > 0 ? `<div class="total">Karttan Düşülen: -${money(gameDeductedTotal(order))}</div>` : ""}
+          <div class="total">Ödenecek: ${money(payableTotal(order))}</div>
         </section>
       `;
     }
