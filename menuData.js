@@ -55,6 +55,7 @@ window.menuItems = [
   { id: "coffee-15", categoryId: "coffee", name: "Double Türk Kahvesi", price: 160 },
   { id: "coffee-16", categoryId: "coffee", name: "Dibek Kahvesi", price: 150 },
   { id: "coffee-17", categoryId: "coffee", name: "Sıcak Çikolata", price: 210 },
+  { id: "coffee-18", categoryId: "coffee", name: "Laktozsuz süt ilave", price: 20 },
   { id: "tea-1", categoryId: "tea", name: "Çay", price: 70 },
   { id: "tea-2", categoryId: "tea", name: "Çay (Fincan)", price: 90 },
   { id: "tea-3", categoryId: "tea", name: "Bitki Çayı", price: 200 },
