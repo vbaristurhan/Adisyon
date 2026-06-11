@@ -27,7 +27,7 @@ window.menuItems = [
   { id: "food-7", categoryId: "food", name: "Makarna (Tereyağlı)", price: 450 },
   { id: "food-8", categoryId: "food", name: "Makarna (Pestolu)", price: 500 },
   { id: "food-9", categoryId: "food", name: "Sıcak Sepet", price: 500 },
-  { id: "food-10", categoryId: "food", name: "Omlet", price: 300 },
+  { id: "food-10", categoryId: "food", name: "Omlet", price: 350 },
   { id: "food-11", categoryId: "food", name: "Kaşarlı Omlet", price: 350 },
   { id: "dessert-1", categoryId: "dessert", name: "Waffle", price: 450 },
   { id: "dessert-2", categoryId: "dessert", name: "Vişneli Mozaik Pasta", price: 360 },
